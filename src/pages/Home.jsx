@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import logoStpn from "../assets/images/stpn-logo.png";
 import "./index.css";
 import { Link } from "react-router-dom";
-
-import imgKetua from '../assets/images/img-ketua-1.png'
-
+import axios from "axios";
+import imgKetua from "../assets/images/img-ketua-1.png";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
@@ -42,8 +41,30 @@ function MyVerticallyCenteredModal(props) {
 
 export default function Home() {
   const [modalShow, setModalShow] = useState(true);
+  const token = localStorage.getItem("token");
+
+  const base = process.env.REACT_APP_BASE_URL;
+
+  const getDetail = () => {
+    axios
+      .get(base+"/detail", {
+        WithCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        window.location.href = "/login";
+      });
+  };
 
   useEffect(() => {
+    document.title = "Home";
+    getDetail();
     const yearEl = document.querySelector("#year");
     const modalIntroEl = document.querySelector(".modal__intro");
     const overlayEl = document.querySelector(".overlay");

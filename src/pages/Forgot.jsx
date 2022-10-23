@@ -14,34 +14,42 @@ export default function Forgot() {
 
   const [loading, setLoading] = React.useState(false);
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const email = e.target.email.value;
-    const data = {
-      email: email,
-    };
-    axios
-      .post(base + "/forgot", data)
-      .then((res) => {
-        alert(JSON.stringify(res.data));
-        setLoading(false);
-        toast.success("Success Notification !", {
-          position: toast.POSITION.TOP_CENTER
-        });
-      })
-      .catch((err) => {
-        if (err.response.status === 404) {
-          alert(err.response.data.errors);
-        }
-        if(err.response.status === 403) {
-          alert(err.response.data.errors);
-        }
-        setLoading(false);
-        toast.error("Error Notification !", {
-          position: toast.POSITION.TOP_CENTER
-        });
+    try{
+      e.preventDefault();
+      setLoading(true);
+      const email = e.target.email.value;
+      const data = {
+        email: email,
+      };
+      axios
+        .post(base + "/forgot", data)
+        .then((res) => {
+          alert(JSON.stringify(res.data));
+          setLoading(false);
+          toast.success("Success Notification !", {
+            position: toast.POSITION.TOP_CENTER
+          });
+          window.location.href = "/otp-verify/" + email;
+        })
+        .catch((err) => {
+          if (err.response.status === 404) {
+            alert(err.response.data.errors);
+          }
+          if(err.response.status === 403) {
+            alert(err.response.data.errors);
+          }
+          setLoading(false);
+          toast.error("Error Notification !", {
+            position: toast.POSITION.TOP_CENTER
+          });
 
-      });
+        });
+    } catch(err) {
+      setLoading(false);
+      toast.error(err, {
+        position: toast.POSITION.TOP_CENTER
+      })
+    }
   };
 
 

@@ -45,6 +45,8 @@ export default function OtpVerify() {
       .post(base + "/verify", data)
       .then((res) => {
         alert(JSON.stringify(res.data.data));
+        localStorage.setItem('token', res.data.data.token)
+        window.location.href = "/set-new-password";
       })
       .catch((err) => {
         if (err.response.status === 404) {
@@ -84,6 +86,7 @@ export default function OtpVerify() {
                 id='otp'
                 autoComplete='off'
                 placeholder='00000'
+                maxLength={6}
                 onChange={(e) => setOtp(e.target.value)}
               />
             </div>
@@ -94,6 +97,7 @@ export default function OtpVerify() {
             className='btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold'
             id='verif'
             defaultValue='Verifikasi'
+            
           />
 
           <a

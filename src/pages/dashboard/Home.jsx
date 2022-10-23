@@ -1,83 +1,48 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./home.css"
-import { Link } from "react-router-dom";
-import logoStpn from "../../assets/images/stpn-logo.png";
 import imgKetua from "../../assets/images/img-ketua-1.png";
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import axios from "axios";
+import Sidebar from "../../component/Sidebar";
 
 export default function Home() {
   const navToggler = document.querySelector(".navbar-toggler");
   const sidebar = document.querySelector(".sidebar");
-
+  const base = process.env.REACT_APP_BASE_URL;
   // show sidebar on nav toggler click
   // navToggler.addEventListener("click", function () {
   //   sidebar.classList.toggle("active");
   // });
 
+  const getDetail = () => {
+    const token = localStorage.getItem('token');
+
+
+    axios
+    .get(base + '/detail', {
+      WithCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    })
+    .then((res) => {
+      console.log(res.data);
+    })
+    .catch((err) => {
+      console.log(err);
+      window.location.href = '/login'
+    });
+  }
+
+  useEffect(() => {
+    document.title = "Dashboard";
+    getDetail();
+  });
+
   return (
     <>
       <div className='main-container d-flex'>
         {/* SIDEBAR */}
-        <div className='sidebar position-relative' id='side_nav'>
-          <div className='header-box px-3 pt-4 pb-4 d-flex justify-content-center me-4'>
-            <img src= {logoStpn} alt='stpn-logo' height={50} />
-            <h1 className='fs-5 text-center text-white ms-3'>
-              EVOTE <br />
-              BEM STPN
-            </h1>
-          </div>
-          <ul className='list-unstyled px-2'>
-            <li className='my-2 active'>
-              <Link to='/dashboard' className='text-decoration-none'>
-                <div
-                  className='text-decoration-none d-flex px-3 py-2 d-block'>
-                  <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
-                    {" "}
-                    <HomeOutlinedIcon />{" "}
-                  </span>{" "}
-                  Dashboard
-                </div>
-              </Link>
-            </li>
-            <li className='my-2'>
-              <a
-                href='periode.html'
-                className='text-decoration-none d-flex px-3 py-2 d-block'>
-                <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
-                  {" "}
-                  <HowToRegOutlinedIcon />{" "}
-                </span>{" "}
-                Periode &amp; Paslon
-              </a>
-            </li>
-            <li className='my-2'>
-              <a
-                href='user-management.html'
-                className='text-decoration-none d-flex px-3 py-2 d-block'>
-                <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
-                  {" "}
-                  <PeopleAltOutlinedIcon />{" "}
-                </span>{" "}
-                User Management
-              </a>
-            </li>
-            <hr className='h-color mx-3' />
-            <li className='mt-auto'>
-              <a
-                href='/index.html'
-                className='btn__logout text-decoration-none d-flex px-3 py-2 d-block'>
-                <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
-                  {" "}
-                  <LogoutOutlinedIcon />{" "}
-                </span>{" "}
-                Logout
-              </a>
-            </li>
-          </ul>
-        </div>
+        <Sidebar active={'dashboard'} />
         {/* CONTENT */}
         <div className='content'>
           {/* Dashboard */}
