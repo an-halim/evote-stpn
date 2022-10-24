@@ -35,8 +35,10 @@ export default function Regist() {
       .post(base + "/regist", data)
       .then((res) => {
         alert(JSON.stringify(res.data.data));
-        if(res.data.status === 200){
-          window.location.href = "/";
+        alert(JSON.stringify(res.status));
+        if(res.status === 201){
+          alert("Register Berhasil");
+          window.location.href = "/regist-success";
         }
       })
       .catch((err) => {
@@ -150,6 +152,7 @@ export default function Regist() {
                 className='form-control'
                 id='password'
                 autoComplete='off'
+                pattern=".{8,}" title="Eight or more characters"
                 onChange={(e) => setData({...data, password: e.target.value})}
                 required={true}
               />
@@ -165,6 +168,7 @@ export default function Regist() {
                 type='password'
                 className='form-control'
                 id='password-confirm'
+                pattern=".{8,}" title="Eight or more characters"
                 autoComplete='off'
                 required={true}
               />

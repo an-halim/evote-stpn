@@ -9,6 +9,9 @@ import RegistSuccess from '../pages/RegistSuccess';
 import Dashboard from '../pages/dashboard/Home';
 import Period from '../pages/dashboard/Period';
 import UserManagement from '../pages/dashboard/UserManagement';
+import ConfirmUser from '../pages/dashboard/confirmUser';
+import PasanganCalon from '../pages/dashboard/PasanganCalon';
+import DetailVote from '../pages/dashboard/DetailVote';
 
 export default function Router(){
   return (
@@ -22,7 +25,10 @@ export default function Router(){
       <Route path="/set-new-password" element={<SetNewPass />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/dashboard/periode" element={<Period />} />
+      <Route path="/dashboard/paslon" element={<PasanganCalon />} />
       <Route path="/dashboard/user-management" element={<UserManagement />} />
+      <Route path="/dashboard/user-management/confirm-user" element={<ConfirmUser />} />
+      <Route path="/dashboard/detail-vote" element={<DetailVote />} />
     </Routes>
   );
 }

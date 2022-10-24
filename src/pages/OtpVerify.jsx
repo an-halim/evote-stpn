@@ -81,11 +81,12 @@ export default function OtpVerify() {
             </label>
             <div className='input-group'>
               <input
-                type='number'
+                type='text'
                 className='form-control'
                 id='otp'
                 autoComplete='off'
                 placeholder='00000'
+                pattern="^[0-9]*$"
                 maxLength={6}
                 onChange={(e) => setOtp(e.target.value)}
               />
@@ -100,12 +101,11 @@ export default function OtpVerify() {
             
           />
 
-          <a
+          <button
             onClick={resendOtp}
-            href='#'
-            className='d-block mt-3 text-center text-muted'>
+            className='d-block mt-3 text-center text-muted btn mt-4 w-100 rounded-5 py-2 text-decoration-underline'>
             Resend OTP
-          </a>
+          </button>
         </form>
       </div>
     </div>

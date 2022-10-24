@@ -22,7 +22,7 @@ export default function Home() {
       WithCredentials: true,
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+      },
     })
     .then((res) => {
       console.log(res.data);

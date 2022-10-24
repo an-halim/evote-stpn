@@ -3,81 +3,73 @@ import {Link} from 'react-router-dom'
 import logoStpn from '../assets/images/stpn-logo.png'
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
-import axios from 'axios';
-import {Cookies} from 'react-cookie';
+import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 
 export default function Login() {
-  const cookies = new Cookies();
   const base = process.env.REACT_APP_BASE_URL;  
+
   const getDetail = () => {
-    const token = localStorage.getItem('token');
-    const cok = cookies.get('token');
-    console.log(cok)
+    //const token = localStorage.getItem('token');
 
     axios
     .get(base + '/detail', {
       WithCredentials: true,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
     })
     .then((res) => {
-      console.log(res.data);
       if(res.data.status === 'success' && res.data.data.role === 'admin')
       {
         window.location.href = '/dashboard'
       }
     })
     .catch((err) => {
-      console.log(err);
+      
     });
   }
   useEffect(() => {
     document.title = 'Login'
     getDetail()
     const nim = document.querySelector("#nim");
-    const btnSubmit = document.querySelector(".btn-submit");
+    nim.focus();
+  })
 
-      nim.focus();
-      // btnSubmit.addEventListener("click", function (e) {
-      //   e.preventDefault();
-      //   if (nim.value === "admin") window.location.href = "/admin/index.html";
-      //   else window.location.href = "/";
-      // });
-  }, [])
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const nim = document.querySelector("#nim");
     const password = document.querySelector("#password");
     const btnSubmit = document.querySelector(".btn-submit");
     btnSubmit.innerHTML = "Loading...";
     btnSubmit.disabled = true;
-    axios.post(base + '/login', {
+
+
+    await axios.post(base + '/login', {
       nim: nim.value,
       password: password.value
+    }, {
+      WithCredentials: true
     })
     .then(res => {
-      console.log(res.data)
       if (res.data.status === 'success') {
-        if(res.data.data.role == 'admin'){
+        localStorage.setItem('token', res.data.data.token);
+        if(res.data.data.role === 'admin'){
+          toast.success('Login Berhasil')
           window.location.href = "/dashboard";
         }
-        localStorage.setItem('token', res.data.data.token)
+
       } else {
         alert(res.data.message)
       }
     })
     .catch(err => {
-      console.log(err)
-      toast.error(JSON.stringify(err.response.data.errors), {
+      toast.error(JSON.stringify("err.response.data.errors"), {
         position: toast.POSITION.TOP_CENTER
       })
     })
     .finally(() => {
       btnSubmit.innerHTML = "Login";
       btnSubmit.disabled = false;
+      
     })
   }
 

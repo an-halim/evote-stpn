@@ -1,47 +1,183 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 import Sidebar from "../../component/Sidebar";
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
-import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { MyVerticallyCenteredModal } from "../../component/Modal";
 
 export default function UserManagement() {
-  const data = [
-    {
-      nim: "2011111111",
-      name: "John Doe",
-      major: "Teknik Informatika",
-      email: "johndoe@gmail.com",
-      role: "User",
-    },
-    {
-      nim: "20293469",
-      name: "Kucing Basefont",
-      major: "Diploma I PPK",
-      email: "kucing_basement@gmail.com",
-      role: "Admin",
-    },
-    {
-      nim: "20293351",
-      name: "Garrett Winters",
-      major: "Prodiksus PPAT",
-      email: "garret_winters@gmail.com",
-      role: "User",
-    },
-    {
-      nim: "20293167",
-      name: "Ashton Cox",
-      major: "Diploma I PPK",
-      email: "ashton_cox@gmail.com",
-      role: "User",
-    },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [activeData, setActiveData] = useState([]);
+  const [inactiveData, setInactiveData] = useState([]);
+  const [modalShow, setModalShow] = useState(false);
+
+  let base = process.env.REACT_APP_BASE_URL;
+
+  let fetchData = async () => {
+    let token = localStorage.getItem("token");
+    axios
+      .get(base + "/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        let activeUser = res.data.data.filter((item) => item.isActive === true);
+        let userToActivate = res.data.data.filter(
+          (item) => item.isActive === false
+        );
+        setActiveData(activeUser);
+        setInactiveData(userToActivate);
+      })
+      .catch((err) => {
+        alert("Failed to fetch data");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <>
       <div className='main-container d-flex'>
+        {/* modal */}
+        <MyVerticallyCenteredModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          header={
+            <div>
+              <h1 className='modal-title fs-5' id='addPeriodModalLabel'>
+                Tambah User
+              </h1>
+            </div>
+          }
+          body={
+            <form action='#'>
+              <div className='container-fluid'>
+                <div className='row'>
+                  <div className='col'>
+                    {/* nim */}
+                    <div className='form-group'>
+                      <label htmlFor='nim-add' className='form-label'>
+                        NIM
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          type='text'
+                          className='form-control'
+                          id='nim-add'
+                          autoComplete='off'
+                        />
+                      </div>
+                    </div>
+                    {/* nama lengkap */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='nama' className='form-label'>
+                        Nama Lengkap
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          type='text'
+                          className='form-control'
+                          id='nama'
+                          autoComplete='off'
+                        />
+                      </div>
+                    </div>
+                    {/* jurusan */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='jurusan' className='form-label'>
+                        Jurusan
+                      </label>
+                      <div className='form-group'>
+                        <div className='input-group'>
+                          <select
+                            className='form-select'
+                            aria-label='Default select example'>
+                            <option value='Diploma I PPK'>Diploma I PPK</option>
+                            <option value='Diploma IV Pertanahan' selected>
+                              Diploma IV Pertanahan
+                            </option>
+                            <option value='Prodiksus PPAT'>
+                              Prodiksus PPAT
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Email */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='email' className='form-label'>
+                        Email
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          type='text'
+                          className='form-control'
+                          id='email'
+                          autoComplete='off'
+                        />
+                      </div>
+                    </div>
+                    {/* Password */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='password' className='form-label'>
+                        Password
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          type='text'
+                          className='form-control'
+                          id='password'
+                          autoComplete='off'
+                        />
+                      </div>
+                    </div>
+                    {/* Role */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='role' className='form-label'>
+                        Role
+                      </label>
+                      <div className='input-group'>
+                        <select className='form-select'>
+                          <option value='User' selected>
+                            User
+                          </option>
+                          <option value='Admin'>Admin</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          }
+          footer={
+            <>
+              <button
+                type='button'
+                className='btn btn-secondary'
+                onClick={() => setModalShow(false)}>
+                Batal
+              </button>
+              <button type='button' className='btn btn-primary'>
+                Simpan
+              </button>
+            </>
+
+          }
+        />
+
         {/* SIDEBAR */}
-        <Sidebar active={'user-management'}/>
+        <Sidebar active={"user-management"} />
         {/* CONTENT */}
         <div className='content'>
           {/* User Management */}
@@ -85,25 +221,31 @@ export default function UserManagement() {
                     </form>
                   </div>
                   <div className='col-lg-6 d-flex'>
-                    <a
-                      href='konfirmasi-user.html'
-                      type='button'
-                      className='btn btn-success position-relative ms-auto me-4 d-flex align-items-center'>
-                      <span className='material-symbols-outlined me-1 fs-5'>
-                        {" "}
-                        <CheckCircleOutlinedIcon />{" "}
-                      </span>
-                      Konfirmasi User
-                      <span className='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger'>
-                        99+
-                        <span className='visually-hidden'>unread messages</span>
-                      </span>
-                    </a>
+                    <div className="position-relative me-4 d-flex d-flex ms-auto">
+                      <Link
+                        to='/dashboard/user-management/confirm-user'>
+                        <div className='btn btn-success align-items-center'>
+                          <span className='material-symbols-outlined me-1 fs-5'>
+                            {" "}
+                            <CheckCircleOutlinedIcon />{" "}
+                          </span>
+                          Konfirmasi User
+                          <span className='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger'>
+                            {inactiveData.length >= 100
+                              ? "99+"
+                              : inactiveData.length}
+                            <span className='visually-hidden'>
+                              unread messages
+                            </span>
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
                     <button
-                      className='btn btn-primary d-flex align-items-center'
-                      data-bs-toggle='modal'
-                      data-bs-target='#addUserModal'>
-                      <span className='material-symbols-outlined d-flex align-items-center fs-5 me-1'>
+                      className='btn btn-primary d-flex ms-auto'
+                      onClick={() => setModalShow(true)}
+                      >
+                      <span className='material-symbols-outlined d-flex align-items-center'>
                         {" "}
                         <AddOutlinedIcon />{" "}
                       </span>
@@ -126,50 +268,52 @@ export default function UserManagement() {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.map((item, index) => (
-                          <tr>
-                            <th scope='row'>{index + 1}</th>
-                            <td>{item.nim}</td>
-                            <td>{item.name}</td>
-                            <td>{item.major}</td>
-                            <td>{item.email}</td>
-                            <td>{item.role}</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  className='btn btn-primary me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#showUserModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    <VisibilityOutlinedIcon />
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-success d-flex me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editUserModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    {" "}
-                                    <ModeEditOutlineOutlinedIcon />{" "}
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteUserModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      <DeleteOutlineOutlinedIcon />{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                        {loading
+                          ? null
+                          : activeData?.map((item, index) => (
+                              <tr key={index}>
+                                <th scope='row'>{index + 1}</th>
+                                <td>{item.nim}</td>
+                                <td>{item.name}</td>
+                                <td>{item.major}</td>
+                                <td>{item.email}</td>
+                                <td>{item.role}</td>
+                                <td>
+                                  <div className='d-flex'>
+                                    <button
+                                      className='btn btn-primary me-1'
+                                      data-bs-toggle='modal'
+                                      data-bs-target='#showUserModal'>
+                                      <span className='material-symbols-outlined d-flex align-items-center'>
+                                        <VisibilityOutlinedIcon />
+                                      </span>
+                                    </button>
+                                    <button
+                                      type='button'
+                                      className='btn btn-success d-flex me-1'
+                                      data-bs-toggle='modal'
+                                      data-bs-target='#editUserModal'>
+                                      <span className='material-symbols-outlined d-flex align-items-center'>
+                                        {" "}
+                                        <ModeEditOutlineOutlinedIcon />{" "}
+                                      </span>
+                                    </button>
+                                    <button
+                                      type='button'
+                                      className='btn btn-danger me-1'
+                                      data-bs-toggle='modal'
+                                      data-bs-target='#deleteUserModal'>
+                                      <i className='far fa-trash-alt'>
+                                        <span className='material-symbols-outlined d-flex align-items-center'>
+                                          {" "}
+                                          <DeleteOutlineOutlinedIcon />{" "}
+                                        </span>
+                                      </i>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
                       </tbody>
                     </table>
                   </div>
@@ -383,10 +527,13 @@ export default function UserManagement() {
                               <select
                                 className='form-select'
                                 aria-label='Default select example'>
+                                <option value='Pilih jurusan' selected>
+                                  Pilih jurusan
+                                </option>
                                 <option value='Diploma I PPK'>
                                   Diploma I PPK
                                 </option>
-                                <option value='Diploma IV Pertanahan' selected>
+                                <option value='Diploma IV Pertanahan'>
                                   Diploma IV Pertanahan
                                 </option>
                                 <option value='Prodiksus PPAT'>

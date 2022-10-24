@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
@@ -15,6 +15,18 @@ export default function Sidebar({ active: activePage }) {
     localStorage.clear();
     window.location.href = "/login";
   };
+
+  useEffect(() => {
+    const navToggler = document.querySelector(".navbar-toggler");
+    const sidebar = document.querySelector(".sidebar");
+
+    // show sidebar on nav toggler click
+    navToggler.addEventListener("click", function () {
+      sidebar.classList.toggle("active");
+    });
+    document.title =  activePage
+  });
+
   return (
     <>
       <div className='sidebar position-relative' id='side_nav'>

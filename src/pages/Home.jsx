@@ -2,53 +2,19 @@ import React, { useEffect, useState } from "react";
 import logoStpn from "../assets/images/stpn-logo.png";
 import "./index.css";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axios from "../utils/axios";
 import imgKetua from "../assets/images/img-ketua-1.png";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 
-function MyVerticallyCenteredModal(props) {
-  return (
-    <Modal
-      {...props}
-      size='lg'
-      aria-labelledby='contained-modal-title-vcenter'
-      centered>
-      {/* <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Modal heading
-        </Modal.Title>
-      </Modal.Header> */}
-      <Modal.Body>
-        <h4 className='fw-bold my-4 text-center'>PERHATIAN!</h4>
-        <p className='text-center p-3'>
-          Pemilihan ini hanya dapat dilakukan <b>sekali</b> dan tidak dapat
-          diulang. Mohon berhati-hati menggunakan hak pilih anda, jangan sampai
-          salah memilih dan
-          <b>gunakan hak pilih anda dengan baik.</b>
-        </p>
-        <button
-          onClick={props.onHide}
-          className='btn btn-secondary btn__mengerti w-100 rounded-5 d-block fw-bold'>
-          OKE, MENGERTI
-        </button>
-      </Modal.Body>
-      {/* <Modal.Footer>
-      </Modal.Footer> */}
-    </Modal>
-  );
-}
 
 export default function Home() {
-  const [modalShow, setModalShow] = useState(true);
-  const token = localStorage.getItem("token");
 
   const base = process.env.REACT_APP_BASE_URL;
+  const token = localStorage.getItem("token");
 
   const getDetail = () => {
     axios
       .get(base+"/detail", {
-        WithCredentials: true,
+        WithCredentials: true, 
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -80,12 +46,7 @@ export default function Home() {
   });
   return (
     <div>
-      {/* MODAL */}
-      {/* <MyVerticallyCenteredModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-      /> */}
-      {/* MODAL */}
+
       <div className='modal__intro'>
         <h4 className='fw-bold mb-4'>PERHATIAN!</h4>
         <p>
