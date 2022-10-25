@@ -18,7 +18,7 @@ export default function RegistSuccess() {
             oleh admin kami. Mohon cek email anda untuk melihat informasi lebih
             lanjut, terutama bagian <b>spam</b>.
           </p>
-          <Link to='/' className='btn btn-light mt-2 py-2 px-4 rounded-5 fw-semibold'>            
+          <Link to='/login' className='btn btn-light mt-2 py-2 px-4 rounded-5 fw-semibold'>            
             RETURN TO HOMEPAGE
           </Link>
         </div>

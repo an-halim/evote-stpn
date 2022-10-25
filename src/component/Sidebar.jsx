@@ -5,8 +5,9 @@ import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Link } from "react-router-dom";
 import logoStpn from "../assets/images/stpn-logo.png";
+import { capitalize } from "@mui/material";
 
-export default function Sidebar({ active: activePage }) {
+export default function Sidebar({ active: activePage, ...props }) {
   const active = (page) => {
     return activePage === page ? "active" : "";
   };
@@ -16,6 +17,10 @@ export default function Sidebar({ active: activePage }) {
     window.location.href = "/login";
   };
 
+  const title = (str) => {
+    return str.replace('-', ' ').split(' ').map((s) => capitalize(s)).join(' ')
+  }
+
   useEffect(() => {
     const navToggler = document.querySelector(".navbar-toggler");
     const sidebar = document.querySelector(".sidebar");
@@ -24,12 +29,18 @@ export default function Sidebar({ active: activePage }) {
     navToggler.addEventListener("click", function () {
       sidebar.classList.toggle("active");
     });
-    document.title =  activePage
+    document.title = title(activePage) + " | EVOTE BEM STPN";
   });
 
   return (
     <>
-      <div className='sidebar position-relative' id='side_nav'>
+      <div
+        className={
+          props.sideBar
+            ? "sidebar position-relative active"
+            : "sidebar position-relative"
+        }
+        id='side_nav'>
         <div className='header-box px-3 pt-4 pb-4 d-flex justify-content-center me-4'>
           <img src={logoStpn} alt='stpn-logo' height={50} />
           <h1 className='fs-5 text-center text-white ms-3'>
@@ -38,9 +49,8 @@ export default function Sidebar({ active: activePage }) {
           </h1>
         </div>
         <ul className='list-unstyled px-2'>
-          <li className={
-            active('dashboard') + ' d-flex align-items-center mb-3'
-            }>
+          <li
+            className={active("dashboard") + " d-flex align-items-center mb-3"}>
             <Link to='/dashboard' className='text-decoration-none'>
               <div className='text-decoration-none d-flex px-3 py-2 d-block'>
                 <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
@@ -51,9 +61,7 @@ export default function Sidebar({ active: activePage }) {
               </div>
             </Link>
           </li>
-          <li className={
-            active('periode') + ' d-flex align-items-center mb-3'
-            }>
+          <li className={active("periode") + " d-flex align-items-center mb-3"}>
             <Link to='/dashboard/periode' className='text-decoration-none'>
               <div className='text-decoration-none d-flex px-3 py-2 d-block'>
                 <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
@@ -64,8 +72,9 @@ export default function Sidebar({ active: activePage }) {
               </div>
             </Link>
           </li>
-          <li className={
-            active('user-management') + ' d-flex align-items-center mb-3'
+          <li
+            className={
+              active("User Management") + " d-flex align-items-center mb-3"
             }>
             <Link
               to='/dashboard/user-management'

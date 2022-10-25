@@ -2,19 +2,24 @@ import React, { useEffect, useState } from "react";
 import logoStpn from "../assets/images/stpn-logo.png";
 import "./index.css";
 import { Link } from "react-router-dom";
-import axios from "../utils/axios";
-import imgKetua from "../assets/images/img-ketua-1.png";
-
+import axios from "axios";
+import Offcanvas from "react-bootstrap/Offcanvas";
+import {toast, ToastContainer} from 'react-toastify';
 
 export default function Home() {
+  const [show, setShow] = useState(false);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const base = process.env.REACT_APP_BASE_URL;
   const token = localStorage.getItem("token");
 
   const getDetail = () => {
     axios
-      .get(base+"/detail", {
-        WithCredentials: true, 
+      .get(base + "/detail", {
+        WithCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -28,9 +33,54 @@ export default function Home() {
       });
   };
 
+  const getData = () => {
+    axios
+      .get(`${base}/candidate?status=active`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setData(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const handleVote = (id) => {
+    axios
+      .post(
+        `${base}/vote`,
+        {
+          candidate_id: id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        toast.success("Vote Success");
+      })
+      .catch((err) => {
+        console.log(err.response.data.errors);
+        toast.error(err.response.data.errors);
+      });
+  };
+  const logout = () => {
+    localStorage.removeItem("token");
+  };
+
   useEffect(() => {
     document.title = "Home";
     getDetail();
+    getData();
     const yearEl = document.querySelector("#year");
     const modalIntroEl = document.querySelector(".modal__intro");
     const overlayEl = document.querySelector(".overlay");
@@ -43,10 +93,11 @@ export default function Home() {
       overlayEl.classList.add("hidden");
     };
     btnMengertiEl.addEventListener("click", hideModal);
-  });
+    console.log(data);
+  }, []);
   return (
     <div>
-
+      <ToastContainer />
       <div className='modal__intro'>
         <h4 className='fw-bold mb-4'>PERHATIAN!</h4>
         <p>
@@ -78,6 +129,7 @@ export default function Home() {
                     </div>
                   </Link>
                   <button
+                    onClick={handleShow}
                     className='navbar-toggler'
                     type='button'
                     data-bs-toggle='offcanvas'
@@ -88,37 +140,33 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div
-              className='offcanvas offcanvas-end'
-              tabIndex={-1}
-              id='offcanvasNavbar'
-              aria-labelledby='offcanvasNavbarLabel'>
-              <div className='offcanvas-header'>
-                <h5 className='offcanvas-title' id='offcanvasNavbarLabel'>
-                  MENU
-                </h5>
-                <button
-                  type='button'
-                  className='btn-close'
-                  data-bs-dismiss='offcanvas'
-                  aria-label='Close'
-                />
-              </div>
-              <div className='offcanvas-body'>
-                <ul className='navbar-nav justify-content-end flex-grow-1 pe-3'>
-                  <li className='nav-item'>
-                    <a className='nav-link active' aria-current='page' href='#'>
-                      Home
-                    </a>
-                  </li>
-                  <li className='nav-item'>
-                    <a className='nav-link' href='/index.html'>
-                      Log Out
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <>
+              <Offcanvas show={show} onHide={handleClose} placement={"end"}>
+                <Offcanvas.Header closeButton>
+                  <Offcanvas.Title>MENU</Offcanvas.Title>
+                </Offcanvas.Header>
+                <Offcanvas.Body>
+                  <ul className='navbar-nav justify-content-end flex-grow-1 pe-3'>
+                    <li className='nav-item'>
+                      <Link
+                        to='/'
+                        className='nav-link active text-decoration-none'
+                        aria-current='page'>
+                        Home
+                      </Link>
+                    </li>
+                    <li className='nav-item'>
+                      <Link
+                        onClick={logout}
+                        to='/login'
+                        className='nav-link text-decoration-none'>
+                        Log Out
+                      </Link>
+                    </li>
+                  </ul>
+                </Offcanvas.Body>
+              </Offcanvas>
+            </>
           </div>
         </nav>
       </header>
@@ -133,63 +181,57 @@ export default function Home() {
                 bawah.
               </p>
             </div>
-            {/* PASLON 01 */}
-            <div className='paslon__card col-lg-3 my-4 p-0'>
-              {/* gambar */}
-              <div className='paslon__img'>
-                <img src={imgKetua} alt='img__ketua' width='50%' />
-                <img src={imgKetua} alt='img__wakil' width='50%' />
-                <div className='img__overlay'>
-                  <h1>01</h1>
+
+            {loading ? (
+              <div className='text-center'>
+                <div className='spinner-border text-primary' role='status'>
+                  <span className='visually-hidden'>Loading...</span>
                 </div>
               </div>
-              {/* deskripsi */}
-              <div className='paslon__desc mt-4 px-3'>
-                <div className='d-flex justify-content-between'>
-                  <p className='text-black-50'>Ketua</p>
-                  <p className='paslon__desc--value'>Muhammad Yusuf</p>
+            ) : (
+              data.map((item, index) => (
+                <div className='paslon__card offset-lg-1 col-lg-3 my-4 p-0' key={index}>
+                  {/* gambar */}
+                  <div className='paslon__img'>
+                    <img
+                      crossOrigin='anonymous'
+                      src={`${base}/upload/${item.head_photo}`}
+                      alt='img__ketua'
+                      width='50%'
+                      height={200}
+                    />
+                    <img
+                      crossOrigin='anonymous'
+                      src={`${base}/upload/${item.deputy_photo}`}
+                      alt='img__wakil'
+                      width='50%'
+                      height={200}
+                    />
+                    <div className='img__overlay'>
+                      <h1>{item.candidate_number}</h1>
+                    </div>
+                  </div>
+                  {/* deskripsi */}
+                  <div className='paslon__desc mt-4 px-3'>
+                    <div className='d-flex justify-content-between'>
+                      <p className='text-black-50'>Ketua</p>
+                      <p className='paslon__desc--value'>{item.head_name}</p>
+                    </div>
+                    <div className='d-flex justify-content-between'>
+                      <p className='text-black-50'>Wakil</p>
+                      <p className='paslon__desc--value'>{item.deputy_name}</p>
+                    </div>
+                  </div>
+                  {/* button */}
+                  <button
+                    onClick={() => handleVote(item.candidate_id)}
+                    className='btn btn-primary btn__vote rounded-5 d-block fw-bold'>
+                    VOTE
+                  </button>
+                  <hr className='paslon__rule' />
                 </div>
-                <div className='d-flex justify-content-between'>
-                  <p className='text-black-50'>Wakil</p>
-                  <p className='paslon__desc--value'>Ridwan Ahmad</p>
-                </div>
-              </div>
-              {/* button */}
-              <a
-                className='btn btn-primary btn__vote rounded-5 d-block fw-bold'
-                href='success.html'>
-                VOTE
-              </a>
-            </div>
-            <hr className='paslon__rule' />
-            {/* PASLON 02 */}
-            <div className='paslon__card offset-lg-1 col-lg-3 my-4 p-0'>
-              {/* gambar */}
-              <div className='paslon__img'>
-                <img src={imgKetua} alt='img__ketua' width='50%' />
-                <img src={imgKetua} alt='img__wakil' width='50%' />
-                <div className='img__overlay'>
-                  <h1>02</h1>
-                </div>
-              </div>
-              {/* deskripsi */}
-              <div className='paslon__desc mt-4 px-3'>
-                <div className='d-flex justify-content-between'>
-                  <p className='text-black-50'>Ketua</p>
-                  <p className='paslon__desc--value'>Arifiyanto Hadinegoro</p>
-                </div>
-                <div className='d-flex justify-content-between'>
-                  <p className='text-black-50'>Wakil</p>
-                  <p className='paslon__desc--value'>Zidan Ainul</p>
-                </div>
-              </div>
-              {/* button */}
-              <a
-                className='btn btn-primary btn__vote rounded-5 d-block fw-bold'
-                href='success.html'>
-                VOTE
-              </a>
-            </div>
+              ))
+            )}
           </div>
         </div>
       </section>

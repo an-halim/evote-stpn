@@ -1,14 +1,16 @@
 import React, {useState, useEffect} from "react";
 import logoStpn from "../assets/images/stpn-logo.png";
 import axios from "axios";
-import {Link, redirect, useLocation} from "react-router-dom";
+import {Link} from "react-router-dom";
 import './index.css'
+import { toast, ToastContainer } from "react-toastify";
+
 
 
 export default function Regist() {
   const base = process.env.REACT_APP_BASE_URL;
-  const locaation = useLocation();
 
+  const [confirmErr, setConfirmErr] = useState(false);
   const [data , setData] = useState({
     nim: "",
     name: "",
@@ -16,12 +18,6 @@ export default function Regist() {
     email: "",
     password: "",
   });
-  // const btnSubmit = document.querySelector(".btn-submit");
-
-  // btnSubmit.addEventListener("click", function (e) {
-  //   e.preventDefault();
-  //   window.location.href = "/";
-  // });
   
   useEffect(() => {
     document.title = 'Register'
@@ -29,24 +25,30 @@ export default function Regist() {
     nim.focus();
   }, []);
 
+  const validatePassword = (e) => {
+    data.password === e.target.value 
+    ? setConfirmErr(false)
+    : setConfirmErr(true);
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
       .post(base + "/regist", data)
       .then((res) => {
-        alert(JSON.stringify(res.data.data));
-        alert(JSON.stringify(res.status));
         if(res.status === 201){
-          alert("Register Berhasil");
           window.location.href = "/regist-success";
         }
       })
       .catch((err) => {
         if (err.response.status === 404) {
-          alert(err.response.data.errors);
+          toast.error(err.response.data.err);
         }
         if (err.response.status === 403) {
-          alert(err.response.data.errors);
+          toast.error(err.response.data.errors[0])
+        }
+        if(err.response.status > 500){
+          toast.error('An error occured, please try again later')
         }
       });
   };
@@ -54,6 +56,7 @@ export default function Regist() {
 
   return (
     <div className='container py-5 d-flex justify-content-center align-items-center'>
+      <ToastContainer />
       <div>
         <div className='form__header text-center d-flex align-items-center'>
           <img
@@ -171,13 +174,19 @@ export default function Regist() {
                 pattern=".{8,}" title="Eight or more characters"
                 autoComplete='off'
                 required={true}
+                onChange={validatePassword}
               />
             </div>
+              {confirmErr && (<span className="text-danger">Your password doesn't match</span>) }
           </div>
           {/* buttons */}
           <input
             type='submit'
-            className='btn btn-primary btn-submit mt-5 py-2 w-100 rounded-5 fw-semibold'
+            className={
+              confirmErr 
+              ? 'btn btn-primary btn-submit mt-5 py-2 w-100 rounded-5 fw-semibold disabled'
+              : 'btn btn-primary btn-submit mt-5 py-2 w-100 rounded-5 fw-semibold'
+            }
             defaultValue='DAFTAR'
           />
           <Link to='/login'>

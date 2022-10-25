@@ -12,11 +12,14 @@ import UserManagement from '../pages/dashboard/UserManagement';
 import ConfirmUser from '../pages/dashboard/confirmUser';
 import PasanganCalon from '../pages/dashboard/PasanganCalon';
 import DetailVote from '../pages/dashboard/DetailVote';
+import SuccessVote from '../pages/SuccessVote';
+import NotFound from '../pages/NotFound';
 
 export default function Router(){
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/success" element={<SuccessVote />} />
       <Route path="/login" element={<Login />} />
       <Route path="/regist" element={<Regist />} />
       <Route path="/regist-success" element={<RegistSuccess />} />
@@ -29,6 +32,7 @@ export default function Router(){
       <Route path="/dashboard/user-management" element={<UserManagement />} />
       <Route path="/dashboard/user-management/confirm-user" element={<ConfirmUser />} />
       <Route path="/dashboard/detail-vote" element={<DetailVote />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

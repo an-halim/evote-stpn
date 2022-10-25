@@ -33,6 +33,7 @@ export default function Example() {
 };
 
 export function MyVerticallyCenteredModal(props) {
+
   return (
     <Modal
       {...props}
@@ -46,14 +47,7 @@ export function MyVerticallyCenteredModal(props) {
         {props.body}
       </Modal.Body>
       <Modal.Footer>
-        {props.footer 
-        ? props.footer 
-        : <button
-          onClick={props.onHide}
-          className='btn btn-secondary btn__mengerti w-100 rounded-5 d-block fw-bold'>
-          OKE, MENGERTI
-        </button>
-        }
+        {props.footer}
       </Modal.Footer>
     </Modal>
   );

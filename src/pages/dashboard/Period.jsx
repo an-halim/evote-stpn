@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../component/Sidebar";
 import axios from "axios";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import StopOutlinedIcon from "@mui/icons-material/StopOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { MyVerticallyCenteredModal } from "../../component/Modal";
 import { Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function Period() {
   const [loading, setLoading] = useState(true);
@@ -14,11 +16,14 @@ export default function Period() {
   const [modalShow, setModalShow] = useState(false);
   const [modalHapus, setModalHapus] = useState(false);
   const [choosedPeriod, setChoosedPeriod] = useState("");
+  const [sideBar, setSideBar] = useState(false);
+  const [generatePeriod, setGeneratePeriod] = useState([]);
+  const [period, setPeriod] = useState("");
 
   const base = process.env.REACT_APP_BASE_URL;
+  let token = localStorage.getItem("token");
 
   let fetchData = async () => {
-    let token = localStorage.getItem("token");
     axios
       .get(base + "/period", {
         headers: {
@@ -30,20 +35,121 @@ export default function Period() {
         setData(period);
       })
       .catch((err) => {
-        alert("Failed to fetch data");
+        console.log(err);
       })
       .finally(() => {
         setLoading(false);
-        console.log(data);
+      });
+  };
+
+  const getDetail = () => {
+    axios
+      .get(base + "/detail", {
+        WithCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.data.role !== "admin") {
+          window.location.href = "/";
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        window.location.href = "/login";
+      });
+  };
+
+  const genPeriode = () => {
+    let data = [];
+    for (let i = 0; i < 5; i++) {
+      let year = new Date().getFullYear();
+      let period = "";
+      if (i === 1) {
+        period = `${year + 1}/${year + 2}`;
+      } else {
+        period = `${year + i}/${year + i + 1}`;
+      }
+      data.push(period);
+    }
+    setGeneratePeriod(data);
+  };
+
+  const addPeriod = (period) => {
+    axios
+      .post(
+        base + "/period",
+        {
+          period: period,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        toast.success("Success add period");
+        fetchData();
+      })
+      .catch((err) => {
+        toast.error("Failed add period");
+      });
+  };
+
+  const deletePeriod = (period) => {
+    setModalHapus(false)
+    const Toast = toast.loading("Please wait...")
+    
+    axios
+      .delete(`${base}/period?year=${period}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        toast.update(Toast, { render: "Success delete period", type: "success", isLoading: false, autoClose: 1500 });
+        fetchData();
+      })
+      .catch((err) => {
+        toast.update(Toast, { render: "Failed delete period", type: "error", isLoading: false, autoClose: 1500 });
+      });
+      
+  };
+
+  const handleStatus = (periode, status) => {
+    let token = localStorage.getItem("token");
+    axios
+      .put(
+        `${base}/period?year=${periode}`,
+        {
+          status: status,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        toast.success("Status periode berhasil diubah");
+        fetchData();
+      })
+      .catch((err) => {
+        toast.error(err.response.data.errors);
       });
   };
 
   useEffect(() => {
+    getDetail();
     fetchData();
+    genPeriode();
   }, []);
   return (
     <>
       <div>
+        <ToastContainer />
         <div className='main-container d-flex'>
           {/* SIDEBAR */}
           <Sidebar active={"periode"} />
@@ -54,7 +160,10 @@ export default function Period() {
               {/* mobile nav */}
               <nav className='navbar d-md-none bg-dark navbar-dark'>
                 <div className='container-fluid'>
-                  <button className='navbar-toggler' type='button'>
+                  <button
+                    className='navbar-toggler'
+                    type='button'
+                    onClick={() => setSideBar(!sideBar)}>
                     <span className='navbar-toggler-icon' />
                   </button>
                 </div>
@@ -77,7 +186,10 @@ export default function Period() {
                     <div className='col-12 mb-3'>
                       <button
                         className='btn btn-primary d-flex ms-auto'
-                        onClick={() => setModalShow(true)}>
+                        onClick={() => {
+                          genPeriode();
+                          setModalShow(true);
+                        }}>
                         <span className='material-symbols-outlined d-flex align-items-center'>
                           {" "}
                           <AddOutlinedIcon />{" "}
@@ -96,49 +208,87 @@ export default function Period() {
                           </tr>
                         </thead>
                         <tbody>
-                          {loading
-                            ? null
-                            : data?.map((item, index) => (
-                                <tr key={index}>
-                                  <th scope='row'>{index + 1}</th>
-                                  <td>{item.period}</td>
-                                  <td>{item.status}</td>
-                                  <td className='d-flex'>
-                                    <button
-                                      type='button'
-                                      className='btn btn-success d-flex disabled me-1'>
+                          {loading ? (
+                            <tr>
+                              <td colSpan='6' className='text-center'>
+                                Loading...
+                              </td>
+                            </tr>
+                          ) : data.length === 0 ? (
+                            <tr>
+                              <td colSpan='6' className='text-center'>
+                                Tidak ada data
+                              </td>
+                            </tr>
+                          ) : (
+                            data?.map((item, index) => (
+                              <tr key={index}>
+                                <th scope='row'>{index + 1}</th>
+                                <td>{item.period}</td>
+                                <td>{item.status}</td>
+                                <td className='d-flex'>
+                                  <button
+                                    type='button'
+                                    period={item.period}
+                                    onClick={(e) => {
+                                      setChoosedPeriod(
+                                        e.target.getAttribute("period")
+                                      );
+                                      let status =
+                                        item.status === "inactive"
+                                          ? "active"
+                                          : item.status === "active"
+                                          ? "finished"
+                                          : null;
+                                      handleStatus(item.period, status);
+                                    }}
+                                    className={
+                                      item.status === "active"
+                                        ? "btn btn-success d-flex me-1"
+                                        : item.status === "inactive"
+                                        ? "btn btn-success d-flex me-1"
+                                        : "btn btn-success d-flex me-1 disabled"
+                                    }>
+                                    <span className='material-symbols-outlined d-flex align-items-center'>
+                                      {" "}
+                                      {item.status === "active" ? (
+                                        <StopOutlinedIcon />
+                                      ) : (
+                                        <PlayArrowOutlinedIcon />
+                                      )}{" "}
+                                      {""}
+                                    </span>
+                                    {item.status === "active"
+                                      ? "Tutup Polling"
+                                      : "Mulai Polling"}
+                                  </button>
+                                  <Link
+                                    to={`/dashboard/paslon?tahun=${item.period}`}>
+                                    <div className='btn btn-primary me-1 d-flex align-items-center'>
+                                      <span className='material-symbols-outlined'>
+                                        <VisibilityOutlinedIcon />
+                                      </span>
+                                    </div>
+                                  </Link>
+                                  <button
+                                    type='button'
+                                    className='btn btn-danger me-1'
+                                    periode={item.period}
+                                    onClick={(e) => {
+                                      setChoosedPeriod(item.period);
+                                      setModalHapus(true);
+                                    }}>
+                                    <i className='far fa-trash-alt'>
                                       <span className='material-symbols-outlined d-flex align-items-center'>
                                         {" "}
-                                        <PlayArrowOutlinedIcon />
-                                        {""}
+                                        <DeleteOutlineOutlinedIcon />{" "}
                                       </span>
-                                      Mulai Polling
-                                    </button>
-                                    <Link to={`/dashboard/paslon?tahun=${item.period}`}>
-                                      <div className='btn btn-primary me-1 d-flex align-items-center'>
-                                        <span className='material-symbols-outlined'>
-                                          <VisibilityOutlinedIcon />
-                                        </span>
-                                      </div>
-                                    </Link>
-                                    <button
-                                      type='button'
-                                      className='btn btn-danger me-1'
-                                      periode={item.period}
-                                      onClick={(e) => {
-                                        setChoosedPeriod(e.target.getAttribute("periode"));
-                                        setModalHapus(true)}}
-                                      >
-                                      <i className='far fa-trash-alt'>
-                                        <span className='material-symbols-outlined d-flex align-items-center'>
-                                          {" "}
-                                          <DeleteOutlineOutlinedIcon />{" "}
-                                        </span>
-                                      </i>
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
+                                    </i>
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -161,20 +311,24 @@ export default function Period() {
             </div>
           }
           body={
-            <form action>
+            <form>
               <div className='form-group'>
                 <label htmlFor='tahun-periode' className='form-label'>
                   Pilih Tahun Periode
                 </label>
                 <div className='input-group'>
-                  <select className='form-select' id='tahun-periode'>
-                    <option value='2021/2022'>2021/2022</option>
-                    <option value='2022/2023' selected>
-                      2022/2023
-                    </option>
-                    <option value='2023/2024'>2023/2024</option>
-                    <option value='2024/2025'>2024/2025</option>
-                    <option value='2024/2025'>2025/2026</option>
+                  <select
+                    onChange={(e) => {
+                      setPeriod(e.target.value)
+                      console.log(period)
+                    }}
+                    className='form-select'
+                    id='tahun-periode'>
+                    {generatePeriod.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -189,7 +343,13 @@ export default function Period() {
                 data-bs-dismiss='modal'>
                 Batal
               </button>
-              <button type='button' className='btn btn-primary'>
+              <button
+                onClick={() => {
+                  addPeriod(period);
+                  setModalShow(false);
+                }}
+                type='button'
+                className='btn btn-primary'>
                 Tambah
               </button>
             </>
@@ -207,7 +367,8 @@ export default function Period() {
           }
           body={
             <div>
-              Apakah anda yakin ingin menghapus periode "<b>{choosedPeriod}</b>"?
+              Apakah anda yakin ingin menghapus periode "<b>{choosedPeriod}</b>
+              "?
             </div>
           }
           footer={
@@ -218,7 +379,9 @@ export default function Period() {
                 onClick={() => setModalHapus(false)}>
                 Batal
               </button>
-              <button type='button' className='btn btn-danger'>
+              <button 
+              onClick={() => deletePeriod(choosedPeriod)}
+              type='button' className='btn btn-danger'>
                 Hapus
               </button>
             </>

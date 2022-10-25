@@ -1,30 +1,35 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
 import logoStpn from '../assets/images/stpn-logo.png'
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
-import axios from '../utils/axios';
-import { toast } from 'react-toastify';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import { Alert } from 'react-bootstrap';
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
+  const [error, setError] = useState(false);
   const base = process.env.REACT_APP_BASE_URL;  
 
-  const getDetail = () => {
+  const getDetail = async () => {
     //const token = localStorage.getItem('token');
-
-    axios
-    .get(base + '/detail', {
-      WithCredentials: true,
-    })
-    .then((res) => {
+    try {
+      const res = await axios.get(base + '/detail', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
       if(res.data.status === 'success' && res.data.data.role === 'admin')
       {
         window.location.href = '/dashboard'
+      } else {
+        window.location.href = '/'
       }
-    })
-    .catch((err) => {
+
+    } catch (err) {
       
-    });
+    }
   }
   useEffect(() => {
     document.title = 'Login'
@@ -52,18 +57,25 @@ export default function Login() {
     .then(res => {
       if (res.data.status === 'success') {
         localStorage.setItem('token', res.data.data.token);
-        if(res.data.data.role === 'admin'){
-          toast.success('Login Berhasil')
-          window.location.href = "/dashboard";
-        }
+        toast.success('Login Berhasil', {
+          position: "top-center"
+        })
+        setTimeout(() => {
+          if(res.data.data.role === 'admin'){
+            window.location.href = "/dashboard";
+          } else {
+            window.location.href = "/";
+          }
+        }, 1500);
 
       } else {
         alert(res.data.message)
       }
     })
     .catch(err => {
-      toast.error(JSON.stringify("err.response.data.errors"), {
-        position: toast.POSITION.TOP_CENTER
+      setError(true)
+      toast.error('Login Gagal', {
+        position: "top-center",
       })
     })
     .finally(() => {
@@ -75,6 +87,7 @@ export default function Login() {
 
   return (
     <div className="container vh-100 d-flex justify-content-center align-items-center">
+    <ToastContainer />
         <div>
           <div className="text-center">
             <img src={logoStpn} alt="logo__stpn" height={173} width="auto" />

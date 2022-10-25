@@ -1,11 +1,83 @@
 import React from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import Sidebar from "../../component/Sidebar";
-
+import axios from "axios";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
+import { MyVerticallyCenteredModal } from "../../component/Modal";
 
 export default function DetailVote() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [periode, setPeriode] = React.useState(searchParams.get("tahun"));
+  const [sideBar, setSideBar] = React.useState(false);
+  const [data, setData] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [modalDelete, setModalDelete] = React.useState(false);
+  const [choosedNim, setChoosedNim] = React.useState("")
+
+  let base = process.env.REACT_APP_BASE_URL;
+  let token = localStorage.getItem("token");
+
+  const getDetail = () => {
+    axios
+      .get(base + "/detail", {
+        WithCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.data.role !== "admin") {
+          window.location.href = "/";
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        window.location.href = "/login";
+      });
+  };
+
+  let fetchData = async () => {
+    axios
+      .get(`${base}/vote?period=${periode}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setData(res.data.data);
+      })
+      .catch((err) => {
+        alert("Failed to fetch data");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const deleteData = () => {
+    axios
+    .delete(`${base}/vote`, {
+      nim: choosedNim,
+      period: periode
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
+  React.useEffect(() => {
+    getDetail();
+    fetchData();
+  }, []);
+
   return (
     <>
       <div>
@@ -18,7 +90,10 @@ export default function DetailVote() {
             <div id='periode-paslon'>
               <nav className='navbar d-md-none bg-dark navbar-dark'>
                 <div className='container-fluid'>
-                  <button className='navbar-toggler' type='button'>
+                  <button
+                    className='navbar-toggler'
+                    type='button'
+                    onClick={() => setSideBar(!sideBar)}>
                     <span className='navbar-toggler-icon' />
                   </button>
                 </div>
@@ -31,7 +106,9 @@ export default function DetailVote() {
                       <Link to='/dashboard/periode'>List Periode</Link>
                     </li>
                     <li className='breadcrumb-item'>
-                      <Link to={`/dashboard/paslon?tahun=${periode}`}>{periode}</Link>
+                      <Link to={`/dashboard/paslon?tahun=${periode}`}>
+                        {periode}
+                      </Link>
                     </li>
                     <li className='breadcrumb-item active' aria-current='page'>
                       Detail Vote
@@ -59,262 +136,58 @@ export default function DetailVote() {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <th scope='row'>1</th>
-                            <td>20293469</td>
-                            <td>Rizal Saefudin Supratman</td>
-                            <td>Diploma IV Pertanahan</td>
-                            <td>01</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>2</th>
-                            <td>20293470</td>
-                            <td>Kucing Basefont</td>
-                            <td>Diploma I PPK</td>
-                            <td>02</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>3</th>
-                            <td>20293351</td>
-                            <td>Garrett Winters</td>
-                            <td>Prodiksus PPAT</td>
-                            <td>01</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>4</th>
-                            <td>20293167</td>
-                            <td>Ashton Cox</td>
-                            <td>Diploma I PPK</td>
-                            <td>02</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>5</th>
-                            <td>20293111</td>
-                            <td>Rizal Saefudin Supratman</td>
-                            <td>Diploma IV Pertanahan</td>
-                            <td>01</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>6</th>
-                            <td>20293470</td>
-                            <td>Cedric Kelly</td>
-                            <td>Prodiksus PPAT</td>
-                            <td>02</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>7</th>
-                            <td>20293696</td>
-                            <td>Airi Satou</td>
-                            <td>Diploma IV Pertanahan</td>
-                            <td>01</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope='row'>8</th>
-                            <td>20293444</td>
-                            <td>Herrod Chandler</td>
-                            <td>Diploma I PPK</td>
-                            <td>02</td>
-                            <td>
-                              <div className='d-flex'>
-                                <button
-                                  type='button'
-                                  className='btn btn-success me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#editVoteModal'>
-                                  <span className='material-symbols-outlined d-flex align-items-center'>
-                                    edit
-                                  </span>
-                                </button>
-                                <button
-                                  type='button'
-                                  className='btn btn-danger me-1'
-                                  data-bs-toggle='modal'
-                                  data-bs-target='#deleteVoteModal'>
-                                  <i className='far fa-trash-alt'>
-                                    <span className='material-symbols-outlined d-flex align-items-center'>
-                                      {" "}
-                                      delete{" "}
-                                    </span>
-                                  </i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
+                          {loading ? (
+                            <tr>
+                              <td colSpan={6}>Loading...</td>
+                            </tr>
+                          ) : data.length === 0 ? (
+                            <tr>
+                              <td colSpan={6} className='text-center'>
+                                Data Kosong
+                              </td>
+                            </tr>
+                          ) : (
+                            data.map((item, index) => {
+                              return (
+                                <tr key={index}>
+                                  <th scope='row'>{index + 1}</th>
+                                  <td>{item.user.nim}</td>
+                                  <td>{item.user.name}</td>
+                                  <td>{item.user.major}</td>
+                                  <td>{item.candidate.candidate_number}</td>
+                                  <td>
+                                    <div className='d-flex'>
+                                      <button
+                                        type='button'
+                                        className='btn btn-success me-1'
+                                        data-bs-toggle='modal'
+                                        data-bs-target='#editVoteModal'>
+                                        <span className='material-symbols-outlined d-flex align-items-center'>
+                                        <ModeEditOutlineOutlinedIcon />
+                                        </span>
+                                      </button>
+                                      <button
+                                        
+                                        onClick={() => {
+                                          setChoosedNim(item.user.nim)
+                                          setModalDelete(true)
+                                        }}
+                                        type='button'
+                                        className='btn btn-danger me-1'
+                                        >
+                                        <i className='far fa-trash-alt'>
+                                          <span className='material-symbols-outlined d-flex align-items-center'>
+                                            {" "}
+                                            <DeleteOutlineOutlinedIcon />{" "}
+                                          </span>
+                                        </i>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -405,11 +278,9 @@ export default function DetailVote() {
                             Vote
                           </label>
                           <div className='input-group'>
-                            <select className='form-select'>
-                              <option value="01" selected>
-                                01
-                              </option>
-                              <option value="02">02</option>
+                            <select defaultValue={"01"} className='form-select'>
+                              <option value='01'>01</option>
+                              <option value='02'>02</option>
                             </select>
                           </div>
                         </div>
@@ -433,42 +304,37 @@ export default function DetailVote() {
           </div>
         </div>
         {/* modal hapus vote */}
-        <div
-          className='modal fade'
-          id='deleteVoteModal'
-          tabIndex={-1}
-          aria-labelledby='deleteVoteModalLabel'
-          aria-hidden='true'>
-          <div className='modal-dialog'>
-            <div className='modal-content'>
-              <div className='modal-header'>
-                <h1 className='modal-title fs-5' id='deleteVoteModalLabel'>
-                  Hapus Calon
-                </h1>
-                <button
-                  type='button'
-                  className='btn-close'
-                  data-bs-dismiss='modal'
-                  aria-label='Close'
-                />
-              </div>
-              <div className='modal-body'>
-                Apakah anda yakin ingin menghapus vote ini?
-              </div>
-              <div className='modal-footer'>
-                <button
-                  type='button'
-                  className='btn btn-secondary'
-                  data-bs-dismiss='modal'>
-                  Batal
-                </button>
-                <button type='button' className='btn btn-danger'>
-                  Hapus
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <MyVerticallyCenteredModal
+          show={modalDelete}
+          onHide={() => setModalDelete(false)}
+          header={
+            <h1 className='modal-title fs-5' id='deleteCandidateModalLabel'>
+              Hapus Vote
+            </h1>
+          }
+          body={
+            <>
+              Apakah anda yakin ingin menghapus vote ini?
+            </>
+          }
+          footer={
+            <>
+              <button
+                onClick={() => setModalDelete(false)}
+                type='button'
+                className='btn btn-secondary'
+                data-bs-dismiss='modal'>
+                Batal
+              </button>
+              <button
+                onClick={() => deleteData()}
+                type='button'
+                className='btn btn-danger'>
+                Hapus
+              </button>
+            </>
+          }
+        />
       </div>
     </>
   );
