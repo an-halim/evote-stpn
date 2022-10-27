@@ -1,12 +1,10 @@
 import React from "react";
-import { Link} from "react-router-dom";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import EmailIcon from '@mui/icons-material/Email';
+import { Link } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EmailIcon from "@mui/icons-material/Email";
 import axios from "axios";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-  
-
 
 export default function Forgot() {
   document.title = "Forgot Password";
@@ -14,7 +12,9 @@ export default function Forgot() {
 
   const [loading, setLoading] = React.useState(false);
   const handleSubmit = (e) => {
-    try{
+    try {
+      const Toast = toast.loading("Mohon tunggu...");
+
       e.preventDefault();
       setLoading(true);
       const email = e.target.email.value;
@@ -24,41 +24,50 @@ export default function Forgot() {
       axios
         .post(base + "/forgot", data)
         .then((res) => {
-          alert(JSON.stringify(res.data));
           setLoading(false);
-          toast.success("Success Notification !", {
-            position: toast.POSITION.TOP_CENTER
+          toast.update(Toast, {
+            render: "Kode verifikasi berhasil dikirim!",
+            type: "success",
+            isLoading: false,
+            autoClose: 1500,
           });
-          window.location.href = "/otp-verify/" + email;
+          setTimeout(() => {
+            window.location.href = "/otp-verify/" + email;
+          }, 2000);
         })
         .catch((err) => {
           if (err.response.status === 404) {
-            alert(err.response.data.errors);
-          }
-          if(err.response.status === 403) {
-            alert(err.response.data.errors);
+            toast.update(Toast, {
+              render: "Email tidak ditemukan!",
+              type: "error",
+              isLoading: false,
+              autoClose: 1500,
+            });
+          } else if (err.response.status === 403) {
+            toast.update(Toast, {
+              render: "Mohon tunggu 5 menit untuk mengirim ulang kode verifikasi!",
+              type: "error",
+              isLoading: false,
+              autoClose: 1500,
+            });
           }
           setLoading(false);
-          toast.error("Error Notification !", {
-            position: toast.POSITION.TOP_CENTER
-          });
-
+          
         });
-    } catch(err) {
+    } catch (err) {
       setLoading(false);
-      toast.error(err, {
-        position: toast.POSITION.TOP_CENTER
-      })
+      toast.error("Terjadi kesalahan!");
     }
   };
-
 
   return (
     <div className='container vh-100 d-flex justify-content-center mt-5'>
       <ToastContainer />
       <div className='col-lg-4 col-10'>
-        <Link to='/login' className='text-secondary fw-semibold text-decoration-none d-flex'>
-          <ArrowBackIcon fontSize='medium' /> 
+        <Link
+          to='/login'
+          className='text-secondary fw-semibold text-decoration-none d-flex'>
+          <ArrowBackIcon fontSize='medium' />
           <span className='d-flex align-items-center me-2'>Kembali</span>
         </Link>
         <hr />
@@ -94,9 +103,9 @@ export default function Forgot() {
           <input
             type='submit'
             className={
-              loading 
-              ? "btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold disabled" 
-              : "btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold"
+              loading
+                ? "btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold disabled"
+                : "btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold"
             }
             id='reset'
             defaultValue='Kirim OTP'

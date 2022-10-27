@@ -74,6 +74,7 @@ export default function Period() {
       data.push(period);
     }
     setGeneratePeriod(data);
+    setPeriod(data[0]);
   };
 
   const addPeriod = (period) => {
@@ -322,6 +323,7 @@ export default function Period() {
                       setPeriod(e.target.value)
                       console.log(period)
                     }}
+                    defaultChecked={generatePeriod[0]}
                     className='form-select'
                     id='tahun-periode'>
                     {generatePeriod.map((item, index) => (

@@ -5,6 +5,7 @@ import axios from "axios";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import { MyVerticallyCenteredModal } from "../../component/Modal";
+import {toast, ToastContainer} from 'react-toastify';
 
 export default function DetailVote() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,7 +22,6 @@ export default function DetailVote() {
   const getDetail = () => {
     axios
       .get(base + "/detail", {
-        WithCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,20 +56,40 @@ export default function DetailVote() {
   };
 
   const deleteData = () => {
-    axios
-    .delete(`${base}/vote`, {
-      nim: choosedNim,
-      period: periode
-    }, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    setModalDelete(false)
+    const Toast = toast.loading("Deleting data...");
+
+    const data = JSON.stringify({
+      "nim": choosedNim,
+      "period": periode
+    });
+    
+    const config = {
+      method: 'delete',
+      url: `${base}/vote`,
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+    axios(config)
     .then((res) => {
-      console.log(res)
+      toast.update(Toast, {
+        render: "Data deleted",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+      fetchData();
     })
     .catch((err) => {
-      console.log(err)
+      toast.update(Toast, {
+        render: "Failed to delete data",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
     })
   }
 

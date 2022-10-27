@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Sidebar from "../../component/Sidebar";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
@@ -11,6 +10,7 @@ import { MyVerticallyCenteredModal } from "../../component/Modal";
 import SearchIcon from "@mui/icons-material/Search";
 import CustomTablePagination from "../../component/CustomTable";
 import {toast, ToastContainer} from "react-toastify"
+import { capitalize } from "@mui/material";
 
 export default function UserManagement() {
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ export default function UserManagement() {
   const [inactiveData, setInactiveData] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
-  const [modalShowUser, setModalShowUser] = useState(false)
+  const [modalDelete, setModalDelete] = React.useState(false);
   const [sideBar, setSideBar] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = React.useState(0);
@@ -94,6 +94,7 @@ export default function UserManagement() {
     const Toast = toast.loading("Please wait...")
     let data = user
     data.isActive = true
+    console.log(data)
     axios
       .post(`${base}/user`, data, {
         headers: {
@@ -106,7 +107,40 @@ export default function UserManagement() {
       .catch((err) => {
         toast.update(Toast, { render: "Failed to add user", type: "error", isLoading: false, autoClose: 2000 });
       })
+  };
+
+  const deleteData = () => {
+    setModalDelete(false)
+    const Toast = toast.loading("Deleting data...");
+    
+    const config = {
+      method: 'delete',
+      url: `${base}/user/${user.nim}`,
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    };
+    axios(config)
+    .then((res) => {
+      toast.update(Toast, {
+        render: "Data deleted",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+      fetchData();
+    })
+    .catch((err) => {
+      toast.update(Toast, {
+        render: "Failed to delete data",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
   }
+
   useEffect(() => {
     getDetail();
     fetchData();
@@ -147,7 +181,7 @@ export default function UserManagement() {
               </div>
               <div className='container-fluid p-0'>
                 <div className='row mt-4 flex-lg-row flex-column-reverse'>
-                  <div className='col-lg-4 col-md-6 d-flex'>
+                  <div className='col-lg-4 d-flex'>
                     <input
                       className='form-control me-lg-2 ms-lg-0 ms-auto mt-lg-0 mt-3'
                       type='search'
@@ -161,7 +195,7 @@ export default function UserManagement() {
                       className='me-lg-2 ms-lg-0 ms-auto mt-lg-0 mt-3'
                     />
                   </div>
-                  <div className='col-lg-4 col-md-6 d-flex ms-auto'>
+                  <div className='col-lg-6 d-flex ms-auto'>
                     <div className='position-relative d-flex ms-auto'>
                       <Link to='/dashboard/user-management/confirm-user'>
                         <div className='btn btn-success align-items-center'>
@@ -255,22 +289,6 @@ export default function UserManagement() {
                                 <td>
                                   <div className='d-flex'>
                                     <button
-                                      className='btn btn-primary me-1'
-                                      onClick={() => {
-                                        setUser({
-                                          nim: item.nim,
-                                          name: item.name,
-                                          major: item.major,
-                                          email: item.email,
-                                          role: item.role,
-                                        });
-                                        setModalShowUser(true);
-                                      }}>
-                                      <span className='material-symbols-outlined d-flex align-items-center'>
-                                        <VisibilityOutlinedIcon />
-                                      </span>
-                                    </button>
-                                    <button
                                       type='button'
                                       className='btn btn-success d-flex me-1'
                                       onClick={() => {
@@ -289,10 +307,20 @@ export default function UserManagement() {
                                       </span>
                                     </button>
                                     <button
+                                    onClick={() => {
+                                        setUser({
+                                          nim: item.nim,
+                                          name: item.name,
+                                          major: item.major,
+                                          email: item.email,
+                                          role: item.role,
+                                        });
+                                        setModalDelete(true);
+                                      }}
+
                                       type='button'
                                       className='btn btn-danger me-1'
-                                      data-bs-toggle='modal'
-                                      data-bs-target='#deleteUserModal'>
+                                      >
                                       <i className='far fa-trash-alt'>
                                         <span className='material-symbols-outlined d-flex align-items-center'>
                                           {" "}
@@ -346,122 +374,6 @@ export default function UserManagement() {
           </div>
         </div>
         {/* MODALS */}
-        {/* show user modal */}
-        <MyVerticallyCenteredModal
-          show={modalShowUser}
-          onHide={() => setModalShowUser(false)}
-          header={
-            <h1 className='modal-title fs-5' id='editUserLabel'>
-              Detail User
-            </h1>
-          }
-          body={
-            <form action='#'>
-              <div className='container-fluid'>
-                <div className='row'>
-                  <div className='col'>
-                    {/* nim */}
-                    <div className='form-group'>
-                      <label htmlFor='nim' className='form-label'>
-                        NIM
-                      </label>
-                      <div className='input-group'>
-                        <input
-                          type='text'
-                          className='form-control'
-                          id='nim'
-                          autoComplete='off'
-                          defaultValue={user.nim}
-                        />
-                      </div>
-                    </div>
-                    {/* nama lengkap */}
-                    <div className='form-group mt-3'>
-                      <label htmlFor='nama' className='form-label'>
-                        Nama Lengkap
-                      </label>
-                      <div className='input-group'>
-                        <input
-                          type='text'
-                          className='form-control'
-                          id='nama'
-                          autoComplete='off'
-                          defaultValue={user.name}
-                        />
-                      </div>
-                    </div>
-                    {/* jurusan */}
-                    <div className='form-group mt-3'>
-                      <label htmlFor='jurusan' className='form-label'>
-                        Jurusan
-                      </label>
-                      <div className='input-group'>
-                        <input
-                          type='text'
-                          className='form-control'
-                          id='jurusan'
-                          autoComplete='off'
-                          defaultValue='Diploma IV Pertanahan'
-                          disabled
-                        />
-                      </div>
-                    </div>
-                    {/* Email */}
-                    <div className='form-group mt-3'>
-                      <label htmlFor='email' className='form-label'>
-                        Email
-                      </label>
-                      <div className='input-group'>
-                        <input
-                          type='text'
-                          className='form-control'
-                          id='email'
-                          autoComplete='off'
-                          disabled
-                          defaultValue={user.email}
-                        />
-                      </div>
-                    </div>
-                    {/* Role */}
-                    <div className='form-group mt-3'>
-                      <label htmlFor='role' className='form-label'>
-                        Role
-                      </label>
-                      <div className='input-group'>
-                        <input
-                          type='text'
-                          className='form-control'
-                          id='role'
-                          autoComplete='off'
-                          defaultValue={user.role}
-                          disabled
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-          }
-          footer={
-            <>
-              <button
-                onClick={() => setModalShowUser(false)}
-                type='button'
-                className='btn btn-secondary'
-                data-bs-dismiss='modal'>
-                Batal
-              </button>
-              <button
-              onClick={() => setModalShowUser(false)}
-                type='button'
-                className='btn btn-primary'
-                data-bs-dismiss='modal'>
-                Simpan
-              </button>
-            </>
-          }
-        />
         {/* modal add user */}
         <MyVerticallyCenteredModal
           show={modalShow}
@@ -519,9 +431,9 @@ export default function UserManagement() {
                         <div className='input-group'>
                           <select
                             onChange={(e) => setUser({...user, major: e.target.value})}
-                            defaultValue='default'
-                            className='form-select'
-                            aria-label='Default select example'>
+                            defaultValue='Diploma I PPK'
+                            className='form-select'>
+                            <option value='Pilih jurusan'>Pilih jurusan</option>
                             <option value='Diploma I PPK'>Diploma I PPK</option>
                             <option value='Diploma IV Pertanahan'>
                               Diploma IV Pertanahan
@@ -653,6 +565,7 @@ export default function UserManagement() {
                             defaultValue={user.major}
                             className='form-select'
                             aria-label='Default select example'>
+                            {user.major && (<option value={user.major}>{user.major}</option>)}
                             <option value='Diploma I PPK'>Diploma I PPK</option>
                             <option value='Diploma IV Pertanahan'>
                               Diploma IV Pertanahan
@@ -685,12 +598,24 @@ export default function UserManagement() {
                         Role
                       </label>
                       <div className='input-group'>
-                        <select
-                          defaultValue={user.role}
-                          className='form-select'>
-                          <option value='User'>User</option>
-                          <option value='Admin'>Admin</option>
-                        </select>
+                      {user.role === 'admin' ?
+                            (
+                              <select
+                                defaultValue={user.role}
+                                className='form-select'>
+                                <option value={user.role}>{capitalize(user.role)}</option>
+                                <option value={'user'}>{capitalize('user')}</option>
+                              </select>
+                            )
+                          : (
+                            <select
+                                defaultValue={user.role}
+                                className='form-select'>
+                                <option value={user.role}>{capitalize(user.role)}</option>
+                                <option value={'admin'}>{capitalize('admin')}</option>
+                              </select>
+                            )
+                          }
                       </div>
                     </div>
                   </div>
@@ -717,43 +642,40 @@ export default function UserManagement() {
           }
         />
 
-        {/* modal delete user */}
-        <div
-          className='modal fade'
-          id='deleteUserModal'
-          tabIndex={-1}
-          aria-labelledby='deleteUserModalLabel'
-          aria-hidden='true'>
-          <div className='modal-dialog'>
-            <div className='modal-content'>
-              <div className='modal-header'>
-                <h1 className='modal-title fs-5' id='deleteUserModalLabel'>
-                  Hapus Calon
-                </h1>
-                <button
-                  type='button'
-                  className='btn-close'
-                  data-bs-dismiss='modal'
-                  aria-label='Close'
-                />
-              </div>
-              <div className='modal-body'>
-                Apakah anda yakin ingin menghapus user ini?
-              </div>
-              <div className='modal-footer'>
-                <button
-                  type='button'
-                  className='btn btn-secondary'
-                  data-bs-dismiss='modal'>
-                  Batal
-                </button>
-                <button type='button' className='btn btn-danger'>
-                  Hapus
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* modal hapus vote */}
+        <MyVerticallyCenteredModal
+          show={modalDelete}
+          onHide={() => setModalDelete(false)}
+          header={
+            <h1 className='modal-title fs-5' id='deleteCandidateModalLabel'>
+              Hapus Vote
+            </h1>
+          }
+          body={
+            <>
+              Apakah anda yakin ingin menghapus {user.name}?
+            </>
+          }
+          footer={
+            <>
+              <button
+                onClick={() => setModalDelete(false)}
+                type='button'
+                className='btn btn-secondary'
+                data-bs-dismiss='modal'>
+                Batal
+              </button>
+              <button
+                onClick={() =>{
+                  deleteData();
+                }}
+                type='button'
+                className='btn btn-danger'>
+                Hapus
+              </button>
+            </>
+          }
+        />
       </div>
     </>
   );

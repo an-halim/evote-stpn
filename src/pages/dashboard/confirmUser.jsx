@@ -55,7 +55,7 @@ export default function ConfirmUser() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        toast.error('Session expired, please login again');
         window.location.href = "/login";
       });
   };
@@ -104,6 +104,38 @@ export default function ConfirmUser() {
       })
   };
 
+  const deleteData = () => {
+    setModalReject(false)
+    const Toast = toast.loading("Deleting data...");
+
+    const config = {
+      method: 'delete',
+      url: `${base}/user/${name.nim}`,
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+    };
+    axios(config)
+    .then((res) => {
+      toast.update(Toast, {
+        render: "Data deleted",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+      fetchData();
+    })
+    .catch((err) => {
+      toast.update(Toast, {
+        render: "Failed to delete data",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+  }
+
   React.useEffect(() => {
     getDetail();
     fetchData();
@@ -135,8 +167,30 @@ export default function ConfirmUser() {
             </div>
           }
         />
+        <MyVerticallyCenteredModal
+          show={modalReject}
+          onHide={() => setModalReject(false)}
+          header={<h1 className='modal-title fs-5'>Konfirmasi</h1>}
+          body={
+            <p>Apakah anda yakin ingin menolak akun milik {name.name}?</p>
+          }
+          footer={
+            <div className='d-flex justify-content-end'>
+              <button
+                className='btn btn-secondary me-2'
+                onClick={() => setModalReject(false)}>
+                Batal
+              </button>
+              <button
+                onClick={() => deleteData()}
+                className='btn btn-danger'>
+                Konfirmasi
+              </button>
+            </div>
+          }
+        />
         {/* SIDEBAR */}
-        <Sidebar active={"user-management"} />
+        <Sidebar active={"User Management"} />
         {/* CONTENT */}
         <div className='content'>
           {/* User Management */}
@@ -260,10 +314,16 @@ export default function ConfirmUser() {
                                       </span>
                                     </button>
                                     <button
+                                    onClick={() => {
+                                        setModalReject(true);
+                                        setName({
+                                          name: item.name,
+                                          nim: item.nim,
+                                        });
+                                      }}
                                       type='button'
                                       className='btn btn-danger me-1'
-                                      data-bs-toggle='modal'
-                                      data-bs-target='#rejectUserModal'>
+                                      >
                                       <i className='far fa-trash-alt'>
                                         <span className='material-symbols-outlined d-flex align-items-center'>
                                           {" "}

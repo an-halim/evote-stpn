@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 
 export default function OtpVerify() {
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const base = process.env.REACT_APP_BASE_URL;
 
   const { email: emailParam } = useParams();
@@ -13,9 +16,10 @@ export default function OtpVerify() {
     setEmail(emailParam);
   }, [emailParam]);
 
-  console.log(email);
-
   const resendOtp = (e) => {
+    setLoading(true);
+    const Toast = toast.loading("Mohon tunggu...");
+
     e.preventDefault();
     const data = {
       email: email,
@@ -23,19 +27,36 @@ export default function OtpVerify() {
     axios
       .post(base + "/forgot", data)
       .then((res) => {
-        alert(JSON.stringify(res.data.data));
+        toast.update(Toast, {
+          render: "Kode verifikasi berhasil dikirim!",
+          type: "success",
+          isLoading: false,
+          autoClose: 1500,
+        });
       })
       .catch((err) => {
         if (err.response.status === 404) {
-          alert(err.response.data.errors);
-        }
-        if (err.response.status === 403) {
-          alert(err.response.data.errors);
+          toast.update(Toast, {
+            render: "Email tidak ditemukan!",
+            type: "error",
+            isLoading: false,
+            autoClose: 1500,
+          });
+        } else if (err.response.status === 403) {
+          toast.update(Toast, {
+            render: "Mohon tunggu 5 menit untuk mengirim ulang kode verifikasi!",
+            type: "error",
+            isLoading: false,
+            autoClose: 1500,
+          });
         }
       });
+    setLoading(false);
   };
 
   const handleSubmit = (e) => {
+    setLoading(true);
+
     e.preventDefault();
     const data = {
       email: email,
@@ -44,22 +65,30 @@ export default function OtpVerify() {
     axios
       .post(base + "/verify", data)
       .then((res) => {
-        alert(JSON.stringify(res.data.data));
         localStorage.setItem('token', res.data.data.token)
-        window.location.href = "/set-new-password";
+        toast.success("Kode verifikasi berhasil!");
+        
+        setInterval(() => {
+          window.location.href = "/set-new-password";
+        }, 1500);
       })
       .catch((err) => {
         if (err.response.status === 404) {
-          alert(err.response.data.errors);
+          toast.error("Periksa kembali kode verifikasi!");
+        }
+        if (err.response.status === 422) {
+          toast.error("Periksa kembali kode verifikasi!");
         }
         if (err.response.status === 403) {
-          alert(err.response.data.errors);
+          toast.error("Kode verifikasi telah kadaluarsa!");
         }
       });
+    setLoading(false);
   };
 
   return (
     <div className='container vh-100 d-flex justify-content-center mt-5'>
+    <ToastContainer />
       <div className='col-lg-4 col-10'>
         <Link
           to='/forgot-password'
@@ -89,24 +118,34 @@ export default function OtpVerify() {
                 pattern="^[0-9]*$"
                 maxLength={6}
                 onChange={(e) => setOtp(e.target.value)}
+                required
               />
             </div>
           </div>
           {/* submit & resend OTP */}
           <input
             type='submit'
-            className='btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold'
+            className={
+              loading ? 'btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold disabled' 
+              : 'btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold'
+            }
             id='verif'
             defaultValue='Verifikasi'
             
           />
 
+        </form>
           <button
-            onClick={resendOtp}
-            className='d-block mt-3 text-center text-muted btn mt-4 w-100 rounded-5 py-2 text-decoration-underline'>
+            onClick={() => {
+              resendOtp();
+              setLoading(true);
+            }}
+            className={
+              loading ? 'd-block mt-3 text-center text-muted btn mt-4 w-100 rounded-5 py-2 text-decoration-underline disabled' 
+              : 'd-block mt-3 text-center text-muted btn mt-4 w-100 rounded-5 py-2 text-decoration-underline'
+            }>
             Resend OTP
           </button>
-        </form>
       </div>
     </div>
   );

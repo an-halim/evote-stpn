@@ -162,7 +162,7 @@ export default function Home() {
                         className='nav-link text-decoration-none'>
                         Log Out
                       </Link>
-                    </li>
+                    </li> 
                   </ul>
                 </Offcanvas.Body>
               </Offcanvas>
