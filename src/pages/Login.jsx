@@ -8,7 +8,6 @@ import { toast, ToastContainer } from 'react-toastify';
 import { Alert } from 'react-bootstrap';
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
-import getDetail from '../utils/getDetail';
 
 export default function Login() {
   const [error, setError] = useState(false);
@@ -59,7 +58,7 @@ export default function Login() {
     .then(res => {
       if (res.data.status === 'success') {
         localStorage.setItem('token', res.data.data.token);
-        toast.success('Login Berhasil', {
+        toast.success('Login Berhasil!', {
           position: "top-center"
         })
         setTimeout(() => {
@@ -76,7 +75,7 @@ export default function Login() {
     })
     .catch(err => {
       setError(true)
-      toast.error('Login Gagal', {
+      toast.error('Login Gagal!', {
         position: "top-center",
       })
     })

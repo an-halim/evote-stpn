@@ -89,12 +89,13 @@ export default function UserManagement() {
       });
   };
 
-  const addUser = () => {
+  const addUser = (e) => {
+    e.preventDefault();
     setModalShow(false)
-    const Toast = toast.loading("Please wait...")
+    const Toast = toast.loading("Mohon tunggu...")
     let data = user
     data.isActive = true
-    console.log(data)
+    
     axios
       .post(`${base}/user`, data, {
         headers: {
@@ -102,16 +103,19 @@ export default function UserManagement() {
         }
       })
       .then((res) => {
-        toast.update(Toast, { render: "User has been added", type: "success", isLoading: false, autoClose: 2000 });
+        toast.update(Toast, { render: "Pengguna berhasil ditambah", type: "success", isLoading: false, autoClose: 2000 });
+        setTimeout(() => {
+          fetchData();
+        }, 2000);
       })
       .catch((err) => {
-        toast.update(Toast, { render: "Failed to add user", type: "error", isLoading: false, autoClose: 2000 });
+        toast.update(Toast, { render: "Pengguna gagal ditambah", type: "error", isLoading: false, autoClose: 2000 });
       })
   };
 
   const deleteData = () => {
     setModalDelete(false)
-    const Toast = toast.loading("Deleting data...");
+    const Toast = toast.loading("Mohon tunggu...");
     
     const config = {
       method: 'delete',
@@ -124,16 +128,18 @@ export default function UserManagement() {
     axios(config)
     .then((res) => {
       toast.update(Toast, {
-        render: "Data deleted",
+        render: "Pengguna berhasil dihapus",
         type: "success",
         isLoading: false,
-        autoClose: 2000,
+        autoClose: 1500,
       });
-      fetchData();
+      setTimeout(() => {
+        fetchData();
+      }, 2000);
     })
     .catch((err) => {
       toast.update(Toast, {
-        render: "Failed to delete data",
+        render: "Pengguna gagal dihapus",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -143,7 +149,7 @@ export default function UserManagement() {
 
   const updateData = () => {
     setModalEdit(false)
-    const Toast = toast.loading("Updating data...");
+    const Toast = toast.loading("Mohon tunggu...");
     const config = {
       method: 'put',
       url: `${base}/user/${user.nim}`,
@@ -156,16 +162,18 @@ export default function UserManagement() {
     axios(config)
     .then((res) => {
       toast.update(Toast, {
-        render: "Data updated",
+        render: "Pengguna berhasil diubah",
         type: "success",
         isLoading: false,
-        autoClose: 2000,
+        autoClose: 1500,
       });
-      fetchData();
+      setTimeout(() => {
+        fetchData();
+      }, 2000);
     })
     .catch((err) => {
       toast.update(Toast, {
-        render: "Failed to update data",
+        render: "Pengguna gagal diubah",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -250,6 +258,7 @@ export default function UserManagement() {
                         </div>
                       </Link>
                     </div>
+                    <div className='position-relative d-flex ms-3'>
                     <button
                       className='btn btn-primary d-flex ms-auto'
                       onClick={() => setModalShow(true)}>
@@ -259,6 +268,7 @@ export default function UserManagement() {
                       </span>
                       Tambah User
                     </button>
+                    </div>
                   </div>
                 </div>
                 <div className='row'>
@@ -421,7 +431,7 @@ export default function UserManagement() {
             </div>
           }
           body={
-            <form onSubmit={() => addUser()}>
+            <form onSubmit={(e) => addUser(e)}>
               <div className='container-fluid'>
                 <div className='row'>
                   <div className='col'>
@@ -466,7 +476,6 @@ export default function UserManagement() {
                         <div className='input-group'>
                           <select
                             onChange={(e) => setUser({...user, major: e.target.value})}
-                            defaultValue='Diploma I PPK'
                             className='form-select'>
                             <option value='Pilih jurusan'>Pilih jurusan</option>
                             <option value='Diploma I PPK'>Diploma I PPK</option>
@@ -522,6 +531,7 @@ export default function UserManagement() {
                         <select
                         onChange={(e) => setUser({...user, role: e.target.value.toLowerCase()})}
                          className='form-select'>
+                          <option value={"User"}>Pilih role</option>
                           <option value='User'>User</option>
                           <option value='Admin'>Admin</option>
                         </select>
@@ -556,7 +566,7 @@ export default function UserManagement() {
             </h1>
           }
           body={
-            <form action='#'>
+            <form>
               <div className='container-fluid'>
                 <div className='row'>
                   <div className='col'>

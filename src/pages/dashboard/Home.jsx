@@ -3,7 +3,7 @@ import "./home.css";
 import axios from "axios";
 import Sidebar from "../../component/Sidebar";
 import { capitalize } from "@mui/material";
-import getDetail from "../../utils/getDetail";
+
 
 export default function Home() {
   const [sideBar, setSideBar] = React.useState(false);
@@ -86,9 +86,11 @@ export default function Home() {
               <div className='content-title'>
                 <h2 className='fw-bold'>Dashboard</h2>
                 <p className='fs-5'>
-                  Summary pemilihan ketua dan wakil BEM periode {
-                    loading ? "Loading..." : data[0]?.period
-                  }.
+                  {
+                    data.length < 1
+                    ? "Tidak ada periode yang aktif"
+                    : "Summary pemilihan ketua dan wakil BEM periode " + data[0]?.period
+                  }
                 </p>
               </div>
               <div className='paslon-container container-fluid'>

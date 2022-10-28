@@ -27,6 +27,7 @@ export default function PasanganCalon(props) {
     id: "",
   });
   const [candidate, setCandidate] = React.useState({
+    candidate_id: "",
     candidate_number: "",
     head_nim: "",
     head_name: "",
@@ -79,55 +80,53 @@ export default function PasanganCalon(props) {
       });
   };
 
-  const postData = () => {
-    
-    // cek object candidate
-    for(let [key, value] of Object.entries(candidate)){
-      if(value === ""){
-        setError(true)
-        return;
-      }
+  const validateSize = (e) => {
+    const fileSize = e.target.files[0].size / 1024 / 1024; // in MiB
+    if (fileSize > 2) {
+      toast.error("Foto tidak boleh lebih dari 2MB");
+      e.target.value = null;
+    } 
+
+  }
+
+  const postData = (e, method) => {
+    e.preventDefault();
+    console.log(candidate);
+
+    let url = method.toLowerCase() === "post" ? `${base}/candidate` : `${base}/candidate/${candidate.candidate_id}`;
+    let data = new FormData();
+    data.append("head_nim", candidate.head_nim);
+    data.append("head_name", candidate.head_name);
+    data.append("head_major", candidate.head_major);
+    data.append("head_photo", candidate.head_photo);
+    data.append("deputy_nim", candidate.deputy_nim);
+    data.append("deputy_name", candidate.deputy_name);
+    data.append("deputy_major", candidate.deputy_major);
+    data.append("deputy_photo", candidate.deputy_photo);
+    data.append("period", candidate.period);
+    data.append("candidate_number", candidate.candidate_number);
+
+    let config = {
+      method: method,
+      url: url,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
     };
-
-    if(error){
-      toast.error("Data tidak boleh kosong");
-      return;
-    } else {
-    
-      let data = new FormData();
-      data.append("head_nim", candidate.head_nim);
-      data.append("head_name", candidate.head_name);
-      data.append("head_major", candidate.head_major);
-      data.append("head_photo", candidate.head_photo);
-      data.append("deputy_nim", candidate.deputy_nim);
-      data.append("deputy_name", candidate.deputy_name);
-      data.append("deputy_major", candidate.deputy_major);
-      data.append("deputy_photo", candidate.deputy_photo);
-      data.append("period", candidate.period);
-      data.append("candidate_number", candidate.candidate_number);
-
-      let config = {
-        method: "post",
-        url: `${base}/candidate`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: data,
-      };
-      axios(config)
-        .then((res) => {
-          toast.success("Data berhasil ditambahkan");
-          console.log(res);
-        })
-        .catch((err) => {
-          toast.error("Data gagal ditambahkan");
-          console.log(err);
-        })
-        .finally(() => {
-          getData();
-          setModalAdd(false);
-        });
-    }
+    axios(config)
+      .then((res) => {
+        method.toLowerCase() === "post" ? toast.success("Data berhasil ditambahkan") : toast.success("Data berhasil diubah");
+      })
+      .catch((err) => {
+        method.toLowerCase() === "post" ? toast.error("Data gagal ditambahkan") : toast.error("Data gagal diubah");
+        console.log(err);
+      })
+      .finally(() => {
+        getData();
+        setModalAdd(false);
+        setModalEdit(false);
+      });
   };
 
   const deleteData = () => {
@@ -344,7 +343,7 @@ export default function PasanganCalon(props) {
             </h1>
           }
           body={
-            <form onSubmit={postData}>
+            <form onSubmit={(e) => postData(e, 'POST')}>
               <div className='container-fluid'>
                 {/* KETUA */}
                 <h5 className='d-flex fw-bold'>
@@ -456,18 +455,23 @@ export default function PasanganCalon(props) {
                         Foto
                       </label>
                       <input
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          validateSize(e)
                           setCandidate({
                             ...candidate,
                             head_photo: e.target.files[0],
                           })
-                        }
+                        }}
                         className='form-control'
                         type='file'
                         id='file-ketua'
-                        accept='.jpg, .png, .jpeg'
+                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
                         required
                       />
+                      {/* info limit file */}
+                      <div className='form-text fst-italic'>
+                        *Ukuran file maksimal 2MB
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -563,18 +567,23 @@ export default function PasanganCalon(props) {
                         Foto
                       </label>
                       <input
-                        onChange={(e) =>
+                        onChange={(e) =>{
+                          validateSize(e)
                           setCandidate({
                             ...candidate,
                             deputy_photo: e.target.files[0],
-                          })
-                        }
+                          })                      
+                        }}
                         className='form-control'
                         type='file'
                         id='file-wakil'
                         accept='.jpg, .png, .jpeg'
                         required
                       />
+                      {/* info limit file */}
+                      <div className='form-text fst-italic'>
+                        *Ukuran file maksimal 2MB
+                      </div>
                     </div>
                     <div className='d-flex justify-content-end gap-3 mt-4'>
                       <button
@@ -607,7 +616,7 @@ export default function PasanganCalon(props) {
             </h1>
           }
           body={
-            <form onSubmit={postData}>
+            <form onSubmit={(e) => postData(e, 'PUT')}>
               <div className='container-fluid'>
                 {/* KETUA */}
                 <h5 className='d-flex fw-bold'>
@@ -722,18 +731,23 @@ export default function PasanganCalon(props) {
                         Foto
                       </label>
                       <input
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          validateSize(e)
                           setCandidate({
                             ...candidate,
                             head_photo: e.target.files[0],
                           })
-                        }
+                        }}
                         className='form-control'
                         type='file'
                         id='file-ketua'
                         accept='.jpg, .png, .jpeg'
                         required
                       />
+                      {/* info limit file */}
+                      <div className='form-text fst-italic'>
+                        *Ukuran file maksimal 2MB
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -831,18 +845,23 @@ export default function PasanganCalon(props) {
                         Foto
                       </label>
                       <input
-                        onChange={(e) =>
+                        onChange={(e) => {
+                          validateSize(e)
                           setCandidate({
                             ...candidate,
                             deputy_photo: e.target.files[0],
                           })
-                        }
+                        }}
                         className='form-control'
                         type='file'
                         id='file-wakil'
                         accept='.jpg, .png, .jpeg'
                         required
                       />
+                      {/* info limit file */}
+                      <div className='form-text fst-italic'>
+                        *Ukuran file maksimal 2MB
+                      </div>
                     </div>
                     <div className='d-flex justify-content-end gap-3 mt-4'>
                       <button

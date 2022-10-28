@@ -5,9 +5,11 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import {toast, ToastContainer} from 'react-toastify';
+import { MyVerticallyCenteredModal } from "../component/Modal";
 
 export default function Home() {
   const [show, setShow] = useState(false);
+  const [modal, setModal] = useState(true);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const handleClose = () => setShow(false);
@@ -25,10 +27,11 @@ export default function Home() {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        if (res.data.data.role === "admin") {
+          window.location.href = "/dashboard";
+        }
       })
       .catch((err) => {
-        console.log(err);
         window.location.href = "/login";
       });
   };
@@ -65,13 +68,13 @@ export default function Home() {
         }
       )
       .then((res) => {
-        toast.success("Vote Success");
+        toast.success("Berhasil memilih");
         setTimeout(() => {
           window.location = "/success";
         }, 1000);
       })
       .catch((err) => {
-        toast.error(err.response.data.errors);
+        toast.error(err.response.data.errors === 'You have already voted' ? 'Anda sudah memilih' : 'Gagal memilih');
       });
   };
   const logout = () => {
@@ -83,35 +86,36 @@ export default function Home() {
     getDetail();
     getData();
     const yearEl = document.querySelector("#year");
-    const modalIntroEl = document.querySelector(".modal__intro");
-    const overlayEl = document.querySelector(".overlay");
-    const btnMengertiEl = document.querySelector(".btn__mengerti");
-
     yearEl.textContent = new Date().getFullYear();
-
-    const hideModal = function () {
-      modalIntroEl.classList.add("hidden");
-      overlayEl.classList.add("hidden");
-    };
-    btnMengertiEl.addEventListener("click", hideModal);
-    console.log(data);
   }, []);
   return (
     <div>
       <ToastContainer />
-      <div className='modal__intro'>
-        <h4 className='fw-bold mb-4'>PERHATIAN!</h4>
+      <MyVerticallyCenteredModal
+
+        show={modal}
+        onHide={setModal}
+        header={
+          <h4 className='fw-bold mb-4'>PERHATIAN!</h4>
+        }
+        body={
         <p>
           Pemilihan ini hanya dapat dilakukan <b>sekali</b> dan tidak dapat
           diulang. Mohon berhati-hati menggunakan hak pilih anda, jangan sampai
           salah memilih dan
           <b>gunakan hak pilih anda dengan baik.</b>
         </p>
-        <button className='btn btn-secondary btn__mengerti w-100 rounded-5 d-block fw-bold'>
+        }
+        footer={
+          <button
+            onClick={() => setModal(false)}
+           className='btn btn-secondary btn__mengerti w-100 rounded-5 d-block fw-bold'>
           OKE, MENGERTI
         </button>
-      </div>
-      <div className='overlay' />
+        }
+
+      />
+      {/* <div className='overlay' /> */}
       {/* NAVBAR */}
       <header>
         <nav className='navbar bg-light fixed-top'>

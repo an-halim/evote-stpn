@@ -3,7 +3,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import Sidebar from "../../component/Sidebar";
 import axios from "axios";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import { MyVerticallyCenteredModal } from "../../component/Modal";
 import {toast, ToastContainer} from 'react-toastify';
 
@@ -57,7 +56,7 @@ export default function DetailVote() {
 
   const deleteData = () => {
     setModalDelete(false)
-    const Toast = toast.loading("Deleting data...");
+    const Toast = toast.loading("Mohon tunggu...");
 
     const data = JSON.stringify({
       "nim": choosedNim,
@@ -76,7 +75,7 @@ export default function DetailVote() {
     axios(config)
     .then((res) => {
       toast.update(Toast, {
-        render: "Data deleted",
+        render: "Voting berhasil dihapus",
         type: "success",
         isLoading: false,
         autoClose: 2000,
@@ -85,7 +84,7 @@ export default function DetailVote() {
     })
     .catch((err) => {
       toast.update(Toast, {
-        render: "Failed to delete data",
+        render: "Voting gagal dihapus",
         type: "error",
         isLoading: false,
         autoClose: 2000,
@@ -102,6 +101,7 @@ export default function DetailVote() {
     <>
       <div>
         <div className='main-container d-flex'>
+        <ToastContainer />
           {/* SIDEBAR */}
           <Sidebar active={"periode"} />
           {/* CONTENT */}
@@ -178,15 +178,6 @@ export default function DetailVote() {
                                   <td>
                                     <div className='d-flex'>
                                       <button
-                                        type='button'
-                                        className='btn btn-success me-1'
-                                        data-bs-toggle='modal'
-                                        data-bs-target='#editVoteModal'>
-                                        <span className='material-symbols-outlined d-flex align-items-center'>
-                                        <ModeEditOutlineOutlinedIcon />
-                                        </span>
-                                      </button>
-                                      <button
                                         
                                         onClick={() => {
                                           setChoosedNim(item.user.nim)
@@ -218,111 +209,6 @@ export default function DetailVote() {
           </div>
         </div>
         {/* MODALS */}
-        {/* modal edit vote */}
-        <div
-          className='modal fade'
-          id='editVoteModal'
-          tabIndex={-1}
-          aria-labelledby='editVoteModalLabel'
-          aria-hidden='true'>
-          <div className='modal-dialog'>
-            <div className='modal-content'>
-              <div className='modal-header'>
-                <h1 className='modal-title fs-5' id='editVoteModalLabel'>
-                  Edit Vote
-                </h1>
-                <button
-                  type='button'
-                  className='btn-close'
-                  data-bs-dismiss='modal'
-                  aria-label='Close'
-                />
-              </div>
-              <div className='modal-body'>
-                {/* FORM */}
-                <form action='#'>
-                  <div className='container-fluid'>
-                    <div className='row'>
-                      <div className='col'>
-                        {/* nim */}
-                        <div className='form-group'>
-                          <label htmlFor='nim' className='form-label'>
-                            NIM
-                          </label>
-                          <div className='input-group'>
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='nim'
-                              autoComplete='off'
-                              defaultValue={20293469}
-                              disabled
-                            />
-                          </div>
-                        </div>
-                        {/* nama lengkap */}
-                        <div className='form-group mt-3'>
-                          <label htmlFor='nama' className='form-label'>
-                            Nama Lengkap
-                          </label>
-                          <div className='input-group'>
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='nama'
-                              autoComplete='off'
-                              defaultValue='Rizal Saefudin Supratman'
-                              disabled
-                            />
-                          </div>
-                        </div>
-                        {/* jurusan */}
-                        <div className='form-group mt-3'>
-                          <label htmlFor='jurusan' className='form-label'>
-                            Jurusan
-                          </label>
-                          <div className='input-group'>
-                            <input
-                              type='text'
-                              className='form-control'
-                              id='jurusan'
-                              autoComplete='off'
-                              defaultValue='Diploma IV Pertanahan'
-                              disabled
-                            />
-                          </div>
-                        </div>
-                        {/* Vote */}
-                        <div className='form-group mt-3'>
-                          <label htmlFor='jurusan' className='form-label'>
-                            Vote
-                          </label>
-                          <div className='input-group'>
-                            <select defaultValue={"01"} className='form-select'>
-                              <option value='01'>01</option>
-                              <option value='02'>02</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div className='modal-footer'>
-                <button
-                  type='button'
-                  className='btn btn-secondary'
-                  data-bs-dismiss='modal'>
-                  Batal
-                </button>
-                <button type='button' className='btn btn-primary'>
-                  Tambah
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
         {/* modal hapus vote */}
         <MyVerticallyCenteredModal
           show={modalDelete}

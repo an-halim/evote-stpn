@@ -55,7 +55,7 @@ export default function ConfirmUser() {
         }
       })
       .catch((err) => {
-        toast.error('Session expired, please login again');
+        toast.error("Session expired, please login again");
         window.location.href = "/login";
       });
   };
@@ -75,7 +75,7 @@ export default function ConfirmUser() {
         setUserToActivate(userToActivate);
       })
       .catch((err) => {
-        alert("Failed to fetch data");
+        toast.error("Failed to fetch data");
       })
       .finally(() => {
         setLoading(false);
@@ -84,7 +84,7 @@ export default function ConfirmUser() {
 
   const activateUser = (id) => {
     setModalConfirm(false);
-    const Toast = toast.loading("Please wait...")
+    const Toast = toast.loading("Please wait...");
     axios
       .put(
         base + `/user/${id}`,
@@ -97,44 +97,54 @@ export default function ConfirmUser() {
       )
       .then((res) => {
         fetchData();
-        toast.update(Toast, { render: "User has been activated", type: "success", isLoading: false, autoClose: 2000 });
+        toast.update(Toast, {
+          render: "Pengguna berhasil diaktifkan",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
       })
       .catch((err) => {
-        toast.update(Toast, { render: "Failed to activate user", type: "error", isLoading: false, autoClose: 2000 });
-      })
+        toast.update(Toast, {
+          render: "Pengguna gagal diaktifkan",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      });
   };
 
   const deleteData = () => {
-    setModalReject(false)
-    const Toast = toast.loading("Deleting data...");
+    setModalReject(false);
+    const Toast = toast.loading("Mohon tunggu...");
 
     const config = {
-      method: 'delete',
+      method: "delete",
       url: `${base}/user/${name.nim}`,
-      headers: { 
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     };
     axios(config)
-    .then((res) => {
-      toast.update(Toast, {
-        render: "Data deleted",
-        type: "success",
-        isLoading: false,
-        autoClose: 2000,
+      .then((res) => {
+        toast.update(Toast, {
+          render: "Penolakan berhasil",
+          type: "success",
+          isLoading: false,
+          autoClose: 2000,
+        });
+        fetchData();
+      })
+      .catch((err) => {
+        toast.update(Toast, {
+          render: "Penolakan gagal",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
       });
-      fetchData();
-    })
-    .catch((err) => {
-      toast.update(Toast, {
-        render: "Failed to delete data",
-        type: "error",
-        isLoading: false,
-        autoClose: 2000,
-      });
-    })
-  }
+  };
 
   React.useEffect(() => {
     getDetail();
@@ -171,9 +181,7 @@ export default function ConfirmUser() {
           show={modalReject}
           onHide={() => setModalReject(false)}
           header={<h1 className='modal-title fs-5'>Konfirmasi</h1>}
-          body={
-            <p>Apakah anda yakin ingin menolak akun milik {name.name}?</p>
-          }
+          body={<p>Apakah anda yakin ingin menolak akun milik {name.name}?</p>}
           footer={
             <div className='d-flex justify-content-end'>
               <button
@@ -181,9 +189,7 @@ export default function ConfirmUser() {
                 onClick={() => setModalReject(false)}>
                 Batal
               </button>
-              <button
-                onClick={() => deleteData()}
-                className='btn btn-danger'>
+              <button onClick={() => deleteData()} className='btn btn-danger'>
                 Konfirmasi
               </button>
             </div>
@@ -231,8 +237,8 @@ export default function ConfirmUser() {
                       aria-label='Search'
                       id='search'
                       onChange={(e) => {
-                        setSearch(e.target.value)
-                        setRowsPerPage(-1)
+                        setSearch(e.target.value);
+                        setRowsPerPage(-1);
                       }}
                     />
                     <SearchIcon
@@ -317,7 +323,7 @@ export default function ConfirmUser() {
                                       </span>
                                     </button>
                                     <button
-                                    onClick={() => {
+                                      onClick={() => {
                                         setModalReject(true);
                                         setName({
                                           name: item.name,
@@ -325,8 +331,7 @@ export default function ConfirmUser() {
                                         });
                                       }}
                                       type='button'
-                                      className='btn btn-danger me-1'
-                                      >
+                                      className='btn btn-danger me-1'>
                                       <i className='far fa-trash-alt'>
                                         <span className='material-symbols-outlined d-flex align-items-center'>
                                           {" "}
