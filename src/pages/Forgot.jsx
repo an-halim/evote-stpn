@@ -32,7 +32,7 @@ export default function Forgot() {
             autoClose: 1500,
           });
           setTimeout(() => {
-            window.location.href = "/otp-verify/" + email;
+            window.location.href = "/otp-verify?email=" + email;
           }, 2000);
         })
         .catch((err) => {

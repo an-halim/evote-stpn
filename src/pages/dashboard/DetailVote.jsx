@@ -47,7 +47,7 @@ export default function DetailVote() {
         setData(res.data.data);
       })
       .catch((err) => {
-        alert("Failed to fetch data");
+        toast.error("Terjadi kesalahan");
       })
       .finally(() => {
         setLoading(false);

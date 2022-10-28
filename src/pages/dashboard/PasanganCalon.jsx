@@ -91,7 +91,6 @@ export default function PasanganCalon(props) {
 
   const postData = (e, method) => {
     e.preventDefault();
-    console.log(candidate);
 
     let url = method.toLowerCase() === "post" ? `${base}/candidate` : `${base}/candidate/${candidate.candidate_id}`;
     let data = new FormData();

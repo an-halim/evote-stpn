@@ -24,7 +24,7 @@ export default function Router(){
       <Route path="/regist" element={<Regist />} />
       <Route path="/regist-success" element={<RegistSuccess />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/otp-verify/:email" element={<OtpVerify />} />
+      <Route path="/otp-verify" element={<OtpVerify />} />
       <Route path="/set-new-password" element={<SetNewPass />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/dashboard/periode" element={<Period />} />

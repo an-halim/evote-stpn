@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function OtpVerify() {
   const [otp, setOtp] = useState("");
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [email, setEmail] = React.useState(searchParams.get("email"));
 
   const base = process.env.REACT_APP_BASE_URL;
-
-  const { email: emailParam } = useParams();
-  useEffect(() => {
-    setEmail(emailParam);
-  }, [emailParam]);
 
   const resendOtp = (e) => {
     const Toast = toast.loading("Mohon tunggu...");
