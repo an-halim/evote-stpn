@@ -65,11 +65,12 @@ export default function Home() {
         }
       )
       .then((res) => {
-        console.log(res.data);
         toast.success("Vote Success");
+        setTimeout(() => {
+          window.location = "/success";
+        }, 1000);
       })
       .catch((err) => {
-        console.log(err.response.data.errors);
         toast.error(err.response.data.errors);
       });
   };

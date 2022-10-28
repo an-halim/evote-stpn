@@ -230,7 +230,10 @@ export default function ConfirmUser() {
                       placeholder='Cari User'
                       aria-label='Search'
                       id='search'
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => {
+                        setSearch(e.target.value)
+                        setRowsPerPage(-1)
+                      }}
                     />
                     <SearchIcon
                       fontSize='large'

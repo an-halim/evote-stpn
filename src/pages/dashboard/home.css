@@ -42,6 +42,10 @@ hr.h-color {
   position: relative;
   display: flex;
 }
+.paslon__img img {
+  object-fit: cover;
+}
+
 .img__overlay {
   position: absolute;
   bottom: 0;

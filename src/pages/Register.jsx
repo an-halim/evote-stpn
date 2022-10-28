@@ -115,7 +115,7 @@ export default function Regist() {
                 aria-label='Default select example'
                 onChange={(e) => setData({...data, major: e.target.value})}>  
                 
-                <option value='Pilih jurusan' selected>
+                <option value='Pilih jurusan'>
                   Pilih jurusan
                 </option>
                 <option value='Diploma I PPK'>

@@ -45,7 +45,7 @@ export default function Forgot() {
             });
           } else if (err.response.status === 403) {
             toast.update(Toast, {
-              render: "Mohon tunggu 5 menit untuk mengirim ulang kode verifikasi!",
+              render: "Mohon tunggu 10 menit untuk mengirim ulang kode verifikasi!",
               type: "error",
               isLoading: false,
               autoClose: 1500,

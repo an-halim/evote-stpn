@@ -17,10 +17,8 @@ export default function OtpVerify() {
   }, [emailParam]);
 
   const resendOtp = (e) => {
-    setLoading(true);
     const Toast = toast.loading("Mohon tunggu...");
 
-    e.preventDefault();
     const data = {
       email: email,
     };
@@ -44,14 +42,16 @@ export default function OtpVerify() {
           });
         } else if (err.response.status === 403) {
           toast.update(Toast, {
-            render: "Mohon tunggu 5 menit untuk mengirim ulang kode verifikasi!",
+            render: "Mohon tunggu 10 menit untuk mengirim ulang kode verifikasi!",
             type: "error",
             isLoading: false,
             autoClose: 1500,
           });
         }
+      }).finally(() => {
+        setLoading(false);
       });
-    setLoading(false);
+        
   };
 
   const handleSubmit = (e) => {

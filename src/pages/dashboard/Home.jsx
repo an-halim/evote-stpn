@@ -3,6 +3,7 @@ import "./home.css";
 import axios from "axios";
 import Sidebar from "../../component/Sidebar";
 import { capitalize } from "@mui/material";
+import getDetail from "../../utils/getDetail";
 
 export default function Home() {
   const [sideBar, setSideBar] = React.useState(false);
@@ -110,6 +111,7 @@ export default function Home() {
                           <img
                             crossOrigin='anonymous'
                             src={`${base}/upload/${item.head_photo}`}
+                            className='img-fluid'
                             alt='img__ketua'
                             width='50%'
                             height={200}
@@ -117,6 +119,7 @@ export default function Home() {
                           <img
                             crossOrigin='anonymous'
                             src={`${base}/upload/${item.deputy_photo}`}
+                            className='img-fluid'
                             alt='img__wakil'
                             width='50%'
                             height={200}

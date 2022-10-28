@@ -20,6 +20,8 @@ export default function PasanganCalon(props) {
   const [loading, setLoading] = React.useState(false);
   const [modalAdd, setModalAdd] = React.useState(false);
   const [modalDelete, setModalDelete] = React.useState(false);
+  const [modalEdit, setModalEdit] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState({
     name: "",
     id: "",
@@ -78,39 +80,54 @@ export default function PasanganCalon(props) {
   };
 
   const postData = () => {
-    let data = new FormData();
-    data.append("head_nim", candidate.head_nim);
-    data.append("head_name", candidate.head_name);
-    data.append("head_major", candidate.head_major);
-    data.append("head_photo", candidate.head_photo);
-    data.append("deputy_nim", candidate.deputy_nim);
-    data.append("deputy_name", candidate.deputy_name);
-    data.append("deputy_major", candidate.deputy_major);
-    data.append("deputy_photo", candidate.deputy_photo);
-    data.append("period", candidate.period);
-    data.append("candidate_number", candidate.candidate_number);
-
-    let config = {
-      method: "post",
-      url: `${base}/candidate`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      data: data,
+    
+    // cek object candidate
+    for(let [key, value] of Object.entries(candidate)){
+      if(value === ""){
+        setError(true)
+        return;
+      }
     };
-    axios(config)
-      .then((res) => {
-        toast.success("Data berhasil ditambahkan");
-        console.log(res);
-      })
-      .catch((err) => {
-        toast.error("Data gagal ditambahkan");
-        console.log(err);
-      })
-      .finally(() => {
-        getData();
-        setModalAdd(false);
-      });
+
+    if(error){
+      toast.error("Data tidak boleh kosong");
+      return;
+    } else {
+    
+      let data = new FormData();
+      data.append("head_nim", candidate.head_nim);
+      data.append("head_name", candidate.head_name);
+      data.append("head_major", candidate.head_major);
+      data.append("head_photo", candidate.head_photo);
+      data.append("deputy_nim", candidate.deputy_nim);
+      data.append("deputy_name", candidate.deputy_name);
+      data.append("deputy_major", candidate.deputy_major);
+      data.append("deputy_photo", candidate.deputy_photo);
+      data.append("period", candidate.period);
+      data.append("candidate_number", candidate.candidate_number);
+
+      let config = {
+        method: "post",
+        url: `${base}/candidate`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: data,
+      };
+      axios(config)
+        .then((res) => {
+          toast.success("Data berhasil ditambahkan");
+          console.log(res);
+        })
+        .catch((err) => {
+          toast.error("Data gagal ditambahkan");
+          console.log(err);
+        })
+        .finally(() => {
+          getData();
+          setModalAdd(false);
+        });
+    }
   };
 
   const deleteData = () => {
@@ -133,6 +150,7 @@ export default function PasanganCalon(props) {
         setModalDelete(false);
       });
   };
+  
 
   React.useEffect(() => {
     getDetail();
@@ -274,10 +292,13 @@ export default function PasanganCalon(props) {
                                 <td>
                                   <div className='d-flex'>
                                     <button
+                                      onClick={() => {
+                                        setModalEdit(true);
+                                        setCandidate(item)
+                                      }}
                                       type='button'
                                       className='btn btn-success me-1'
-                                      data-bs-toggle='modal'
-                                      data-bs-target='#addCandidateModal'>
+                                      >
                                       <span className='material-symbols-outlined d-flex align-items-center'>
                                         <ModeEditOutlineOutlinedIcon />
                                       </span>
@@ -292,12 +313,10 @@ export default function PasanganCalon(props) {
                                           id: item.candidate_id,
                                         });
                                       }}>
-                                      <i className='far fa-trash-alt'>
-                                        <span className='material-symbols-outlined d-flex align-items-center'>
-                                          {" "}
-                                          <DeleteOutlineOutlinedIcon />{" "}
-                                        </span>
-                                      </i>
+                                      <span className='material-symbols-outlined d-flex align-items-center'>
+                                        {" "}
+                                        <DeleteOutlineOutlinedIcon />{" "}
+                                      </span>
                                     </button>
                                   </div>
                                 </td>
@@ -325,7 +344,7 @@ export default function PasanganCalon(props) {
             </h1>
           }
           body={
-            <form action='#'>
+            <form onSubmit={postData}>
               <div className='container-fluid'>
                 {/* KETUA */}
                 <h5 className='d-flex fw-bold'>
@@ -351,6 +370,7 @@ export default function PasanganCalon(props) {
                     className='form-control'
                     id='nomor_candidate'
                     autoComplete='off'
+                    required
                   />
                 </div>
                 <div className='row'>
@@ -372,6 +392,7 @@ export default function PasanganCalon(props) {
                           className='form-control'
                           id='nim-ketua'
                           autoComplete='off'
+                          required
                         />
                       </div>
                     </div>
@@ -384,6 +405,7 @@ export default function PasanganCalon(props) {
                       </label>
                       <div className='input-group'>
                         <select
+                          required
                           defaultValue={"---"}
                           className='form-select'
                           onChange={(e) =>
@@ -422,6 +444,7 @@ export default function PasanganCalon(props) {
                           className='form-control'
                           id='nama-ketua'
                           autoComplete='off'
+                          required
                         />
                       </div>
                     </div>
@@ -443,6 +466,7 @@ export default function PasanganCalon(props) {
                         type='file'
                         id='file-ketua'
                         accept='.jpg, .png, .jpeg'
+                        required
                       />
                     </div>
                   </div>
@@ -475,6 +499,7 @@ export default function PasanganCalon(props) {
                           className='form-control'
                           id='nim-wakil'
                           autoComplete='off'
+                          required
                         />
                       </div>
                     </div>
@@ -487,6 +512,7 @@ export default function PasanganCalon(props) {
                       </label>
                       <div className='input-group'>
                         <select
+                          required
                           defaultValue={"---"}
                           className='form-select'
                           onChange={(e) =>
@@ -525,6 +551,7 @@ export default function PasanganCalon(props) {
                           className='form-control'
                           id='nama-wakil'
                           autoComplete='off'
+                          required
                         />
                       </div>
                     </div>
@@ -546,32 +573,295 @@ export default function PasanganCalon(props) {
                         type='file'
                         id='file-wakil'
                         accept='.jpg, .png, .jpeg'
+                        required
                       />
+                    </div>
+                    <div className='d-flex justify-content-end gap-3 mt-4'>
+                      <button
+                        onClick={() => setModalAdd(false)}
+                        type='button'
+                        className='btn btn-secondary'
+                        data-bs-dismiss='modal'>
+                        Batal
+                      </button>
+                      <button
+                        type='submit'
+                        className='btn btn-primary'>
+                        Tambah
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </form>
           }
-          footer={
-            <>
-              <button
-                onClick={() => setModalAdd(false)}
-                type='button'
-                className='btn btn-secondary'
-                data-bs-dismiss='modal'>
-                Batal
-              </button>
-              <button
-                onClick={() => {
-                  postData();
-                  console.log(candidate);
-                }}
-                type='button'
-                className='btn btn-primary'>
-                Tambah
-              </button>
-            </>
+        />
+        {/* modal edit calon */}
+        <MyVerticallyCenteredModal
+          size='lg'
+          show={modalEdit}
+          onHide={() => setModalEdit(false)}
+          header={
+            <h1 className='modal-title fs-5' id='addCandidateModalLabel'>
+              Edit Calon
+            </h1>
+          }
+          body={
+            <form onSubmit={postData}>
+              <div className='container-fluid'>
+                {/* KETUA */}
+                <h5 className='d-flex fw-bold'>
+                  <span className='material-symbols-outlined fs-3 d-flex align-items-center me-2'>
+                    {" "}
+                    <Person2OutlinedIcon />{" "}
+                  </span>
+                  Ketua
+                </h5>
+                <hr />
+                <div className='mb-4'>
+                  <label htmlFor='nomor_candidate' className='form-label'>
+                    NOMOR URUT
+                  </label>
+                  <input
+                    onChange={(e) =>
+                      setCandidate({
+                        ...candidate,
+                        candidate_number: e.target.value,
+                      })
+                    }
+                    type='number'
+                    className='form-control'
+                    id='nomor_candidate'
+                    autoComplete='off'
+                    defaultValue={candidate.candidate_number}
+                    required
+                  />
+                </div>
+                <div className='row'>
+                  <div className='col'>
+                    {/* nim */}
+                    <div className='form-group'>
+                      <label htmlFor='nim-ketua' className='form-label'>
+                        NIM
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          onChange={(e) =>
+                            setCandidate({
+                              ...candidate,
+                              head_nim: e.target.value,
+                            })
+                          }
+                          type='text'
+                          className='form-control'
+                          id='nim-ketua'
+                          autoComplete='off'
+                          defaultValue={candidate.head_nim}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className='col'>
+                    {/* jurusan */}
+                    <div className='form-group'>
+                      <label htmlFor='jurusan' className='form-label'>
+                        Jurusan
+                      </label>
+                      <div className='input-group'>
+                        <select
+                         required
+                          className='form-select'
+                          defaultValue={candidate.head_major}
+                          onChange={(e) =>
+                            setCandidate({
+                              ...candidate,
+                              head_major: e.target.value,
+                            })
+                          }>
+                          <option value='Pilih Jurusan'>Pilih Jurusan</option>
+                          <option value='Diploma I PPK'>Diploma I PPK</option>
+                          <option value='Diploma IV Pertanahan'>
+                            Diploma IV Pertanahan
+                          </option>
+                          <option value='Prodiksus PPAT'>Prodiksus PPAT</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className='row'>
+                  <div className='col'>
+                    {/* nama lengkap */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='nama-ketua' className='form-label'>
+                        Nama Lengkap
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          onChange={(e) =>
+                            setCandidate({
+                              ...candidate,
+                              head_name: e.target.value,
+                            })
+                          }
+                          type='text'
+                          className='form-control'
+                          id='nama-ketua'
+                          autoComplete='off'
+                          defaultValue={candidate.head_name}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className='col'>
+                    {/* File */}
+                    <div className='mt-3'>
+                      <label htmlFor='file-ketua' className='form-label'>
+                        Foto
+                      </label>
+                      <input
+                        onChange={(e) =>
+                          setCandidate({
+                            ...candidate,
+                            head_photo: e.target.files[0],
+                          })
+                        }
+                        className='form-control'
+                        type='file'
+                        id='file-ketua'
+                        accept='.jpg, .png, .jpeg'
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* WAKIL KETUA */}
+                <h5 className='mt-5 d-flex fw-bold'>
+                  <span className='material-symbols-outlined fs-3 d-flex align-items-end me-2'>
+                    {" "}
+                    <GroupOutlinedIcon />{" "}
+                  </span>
+                  Wakil
+                </h5>
+                <hr />
+                <div className='row'>
+                  <div className='col'>
+                    {/* nim */}
+                    <div className='form-group'>
+                      <label htmlFor='nim-wakil' className='form-label'>
+                        NIM
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          onChange={(e) =>
+                            setCandidate({
+                              ...candidate,
+                              deputy_nim: e.target.value,
+                            })
+                          }
+                          type='text'
+                          className='form-control'
+                          id='nim-wakil'
+                          autoComplete='off'
+                          defaultValue={candidate.deputy_nim}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className='col'>
+                    {/* jurusan */}
+                    <div className='form-group'>
+                      <label htmlFor='jurusan-wakil' className='form-label'>
+                        Jurusan
+                      </label>
+                      <div className='input-group'>
+                        <select
+                        required
+                          defaultValue={candidate.deputy_major}
+                          className='form-select'
+                          onChange={(e) =>
+                            setCandidate({
+                              ...candidate,
+                              deputy_major: e.target.value,
+                            })
+                          }>
+                          <option value='Pilih Jurusan'>Pilih Jurusan</option>
+                          <option value='Diploma I PPK'>Diploma I PPK</option>
+                          <option value='Diploma IV Pertanahan'>
+                            Diploma IV Pertanahan
+                          </option>
+                          <option value='Prodiksus PPAT'>Prodiksus PPAT</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className='row'>
+                  <div className='col'>
+                    {/* nama lengkap */}
+                    <div className='form-group mt-3'>
+                      <label htmlFor='nama-wakil' className='form-label'>
+                        Nama Lengkap
+                      </label>
+                      <div className='input-group'>
+                        <input
+                          onChange={(e) =>
+                            setCandidate({
+                              ...candidate,
+                              deputy_name: e.target.value,
+                            })
+                          }
+                          type='text'
+                          className='form-control'
+                          id='nama-wakil'
+                          autoComplete='off'
+                          defaultValue={candidate.deputy_name}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className='col'>
+                    {/* File */}
+                    <div className='mt-3'>
+                      <label htmlFor='file-wakil' className='form-label'>
+                        Foto
+                      </label>
+                      <input
+                        onChange={(e) =>
+                          setCandidate({
+                            ...candidate,
+                            deputy_photo: e.target.files[0],
+                          })
+                        }
+                        className='form-control'
+                        type='file'
+                        id='file-wakil'
+                        accept='.jpg, .png, .jpeg'
+                        required
+                      />
+                    </div>
+                    <div className='d-flex justify-content-end gap-3 mt-4'>
+                      <button
+                        onClick={() => setModalEdit(false)}
+                        type='button'
+                        className='btn btn-secondary'
+                        data-bs-dismiss='modal'>
+                        Batal
+                      </button>
+                      <button
+                        type='submit'
+                        className='btn btn-primary'>
+                        Tambah
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
           }
         />
         {/* modal hapus calon */}

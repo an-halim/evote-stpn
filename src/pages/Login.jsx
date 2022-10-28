@@ -7,30 +7,32 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { Alert } from 'react-bootstrap';
 import "react-toastify/dist/ReactToastify.css";
+import "./index.css";
+import getDetail from '../utils/getDetail';
 
 export default function Login() {
   const [error, setError] = useState(false);
   const base = process.env.REACT_APP_BASE_URL;  
 
   const getDetail = async () => {
-    //const token = localStorage.getItem('token');
-    try {
-      const res = await axios.get(base + '/detail', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
+    const token = localStorage.getItem('token');
+     token && await axios.get(base + '/detail', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }).then(res => {
       if(res.data.status === 'success' && res.data.data.role === 'admin')
       {
         window.location.href = '/dashboard'
       } else {
         window.location.href = '/'
       }
-
-    } catch (err) {
-      
-    }
+    }).catch(err => {
+      console.log(err)
+    })
   }
+
+  
   useEffect(() => {
     document.title = 'Login'
     getDetail()
@@ -114,7 +116,9 @@ export default function Login() {
                 </span>
                 <input type="password" className="form-control" id="password" autoComplete="off" required={true}/>
               </div>
-              <Link to="/forgot-password" className="btn-lupa d-block text-end mt-1 text-decoration-none text-muted">Lupa Password?</Link>
+              <div className="d-flex justify-content-end">
+                <Link to="/forgot-password" className="mt-1 text-decoration-none text-muted">Lupa Password?</Link>
+              </div>
             </div>
             {/* submit & daftar */}
             <input type="submit" className="btn btn-primary btn-submit mt-4 w-100 rounded-5 py-2 fw-semibold" defaultValue="LOGIN" />

@@ -141,6 +141,38 @@ export default function UserManagement() {
     })
   }
 
+  const updateData = () => {
+    setModalEdit(false)
+    const Toast = toast.loading("Updating data...");
+    const config = {
+      method: 'put',
+      url: `${base}/user/${user.nim}`,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data : user
+    };
+    axios(config)
+    .then((res) => {
+      toast.update(Toast, {
+        render: "Data updated",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+      fetchData();
+    })
+    .catch((err) => {
+      toast.update(Toast, {
+        render: "Failed to update data",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    })
+  }
+
   useEffect(() => {
     getDetail();
     fetchData();
@@ -188,7 +220,10 @@ export default function UserManagement() {
                       placeholder='Cari User'
                       aria-label='Search'
                       id='search'
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => {
+                        setSearch(e.target.value)
+                        setRowsPerPage(-1)
+                      }}
                     />
                     <SearchIcon
                       fontSize='large'
@@ -471,6 +506,7 @@ export default function UserManagement() {
                           type='text'
                           className='form-control'
                           id='password'
+                          pattern=".{8,}" title="Eight or more characters"
                           autoComplete='off'
                           required
                           onChange={(e) => setUser({...user, password: e.target.value})}
@@ -536,6 +572,7 @@ export default function UserManagement() {
                           id='nim'
                           autoComplete='off'
                           defaultValue={user.nim}
+                          disabled
                         />
                       </div>
                     </div>
@@ -551,6 +588,7 @@ export default function UserManagement() {
                           id='nama'
                           autoComplete='off'
                           defaultValue={user.name}
+                          onChange={(e) => setUser({...user, name: e.target.value})}
                         />
                       </div>
                     </div>
@@ -564,7 +602,8 @@ export default function UserManagement() {
                           <select
                             defaultValue={user.major}
                             className='form-select'
-                            aria-label='Default select example'>
+                            onChange={(e) => setUser({...user, major: e.target.value})}
+                            >
                             {user.major && (<option value={user.major}>{user.major}</option>)}
                             <option value='Diploma I PPK'>Diploma I PPK</option>
                             <option value='Diploma IV Pertanahan'>
@@ -584,11 +623,12 @@ export default function UserManagement() {
                       </label>
                       <div className='input-group'>
                         <input
-                          type='text'
+                          type='email'
                           className='form-control'
                           id='email'
                           autoComplete='off'
                           defaultValue={user.email}
+                          onChange={(e) => setUser({...user, email: e.target.value})}
                         />
                       </div>
                     </div>
@@ -602,7 +642,9 @@ export default function UserManagement() {
                             (
                               <select
                                 defaultValue={user.role}
-                                className='form-select'>
+                                className='form-select'
+                                onChange={(e) => setUser({...user, role: e.target.value.toLowerCase()})}
+                                >
                                 <option value={user.role}>{capitalize(user.role)}</option>
                                 <option value={'user'}>{capitalize('user')}</option>
                               </select>
@@ -610,7 +652,9 @@ export default function UserManagement() {
                           : (
                             <select
                                 defaultValue={user.role}
-                                className='form-select'>
+                                className='form-select'
+                                onChange={(e) => setUser({...user, role: e.target.value.toLowerCase()})}
+                                >
                                 <option value={user.role}>{capitalize(user.role)}</option>
                                 <option value={'admin'}>{capitalize('admin')}</option>
                               </select>
@@ -633,6 +677,7 @@ export default function UserManagement() {
                 Batal
               </button>
               <button
+                onClick={() => updateData()}
                 type='button'
                 className='btn btn-primary'
                 >
