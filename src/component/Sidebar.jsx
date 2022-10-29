@@ -4,7 +4,7 @@ import HowToRegOutlinedIcon from "@mui/icons-material/HowToRegOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { Link } from "react-router-dom";
-import logoStpn from "../assets/images/stpn-logo.png";
+import logoPPu from "../assets/images/logo_ppu.png";
 import { capitalize } from "@mui/material";
 
 export default function Sidebar({ active: activePage, ...props }) {
@@ -41,16 +41,16 @@ export default function Sidebar({ active: activePage, ...props }) {
             : "sidebar position-relative"
         }
         id='side_nav'>
-        <div className='header-box px-3 pt-4 pb-4 d-flex justify-content-center me-4'>
-          <img src={logoStpn} alt='stpn-logo' height={50} />
+        <div className='header-box px-3 py-4 d-flex justify-content-center me-4'>
+          <img src={logoPPu} alt='logo-ppu' height={50} />
           <h1 className='fs-5 text-center text-white ms-3'>
             EVOTE <br />
-            BEM STPN
+            BST STPN
           </h1>
         </div>
         <ul className='list-unstyled px-2'>
           <li
-            className={active("dashboard") + " d-flex align-items-center mb-3"}>
+            className={active("dashboard") + " d-flex align-items-center my-2"}>
             <Link to='/dashboard' className='text-decoration-none'>
               <div className='text-decoration-none d-flex px-3 py-2 d-block'>
                 <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
@@ -61,7 +61,7 @@ export default function Sidebar({ active: activePage, ...props }) {
               </div>
             </Link>
           </li>
-          <li className={active("periode") + " d-flex align-items-center mb-3"}>
+          <li className={active("periode") + " d-flex align-items-center my-2"}>
             <Link to='/dashboard/periode' className='text-decoration-none'>
               <div className='text-decoration-none d-flex px-3 py-2 d-block'>
                 <span className='material-symbols-outlined fs-5 d-flex align-items-center me-3'>
@@ -74,7 +74,7 @@ export default function Sidebar({ active: activePage, ...props }) {
           </li>
           <li
             className={
-              active("User Management") + " d-flex align-items-center mb-3"
+              active("User Management") + " d-flex align-items-center my-2"
             }>
             <Link
               to='/dashboard/user-management'

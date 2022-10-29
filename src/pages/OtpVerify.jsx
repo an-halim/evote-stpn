@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
@@ -7,7 +7,9 @@ import { toast, ToastContainer } from "react-toastify";
 export default function OtpVerify() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
+  // eslint-disable-next-line no-unused-vars
   const [email, setEmail] = React.useState(searchParams.get("email"));
 
   const base = process.env.REACT_APP_BASE_URL;

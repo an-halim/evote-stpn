@@ -10,6 +10,28 @@ nav {
   display: none;
 }
 
+* {
+  margin: 0;
+}
+
+.logo-wrapper {
+  margin: 7rem 0 3rem;
+}
+
+.btn-lupa,
+.btn-daftar {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.btn-lupa:hover,
+.btn-daftar:hover {
+  text-decoration: underline !important;
+}
+
+.content-wrapper {
+  min-height: 65vh;
+}
+
 .overlay {
   position: absolute;
   top: 0;
@@ -31,6 +53,7 @@ nav {
 }
 .paslon__img img {
   object-fit: cover;
+  height: 200px;
 }
 .img__overlay {
   position: absolute;

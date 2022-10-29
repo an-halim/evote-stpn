@@ -13,7 +13,9 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import { toast, ToastContainer } from "react-toastify";
 
 export default function PasanganCalon(props) {
+  // eslint-disable-next-line no-unused-vars
   const [searchParams, setSearchParams] = useSearchParams();
+  // eslint-disable-next-line no-unused-vars
   const [periode, setPeriode] = React.useState(searchParams.get("tahun"));
   const [sideBar, setSideBar] = React.useState(false);
   const [data, setData] = React.useState([]);
@@ -21,7 +23,6 @@ export default function PasanganCalon(props) {
   const [modalAdd, setModalAdd] = React.useState(false);
   const [modalDelete, setModalDelete] = React.useState(false);
   const [modalEdit, setModalEdit] = React.useState(false);
-  const [error, setError] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState({
     name: "",
     id: "",
@@ -57,7 +58,7 @@ export default function PasanganCalon(props) {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.clear();
         window.location.href = "/login";
       });
   };
@@ -73,7 +74,7 @@ export default function PasanganCalon(props) {
         setData(res.data.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.clear();
       })
       .finally(() => {
         setLoading(false);
@@ -119,12 +120,12 @@ export default function PasanganCalon(props) {
       })
       .catch((err) => {
         method.toLowerCase() === "post" ? toast.error("Data gagal ditambahkan") : toast.error("Data gagal diubah");
-        console.log(err);
       })
       .finally(() => {
         getData();
         setModalAdd(false);
         setModalEdit(false);
+        console.clear();
       });
   };
 
@@ -146,6 +147,7 @@ export default function PasanganCalon(props) {
       .finally(() => {
         getData();
         setModalDelete(false);
+        console.clear();
       });
   };
   
@@ -153,7 +155,9 @@ export default function PasanganCalon(props) {
   React.useEffect(() => {
     getDetail();
     getData();
-  }, [periode]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <div>
@@ -198,9 +202,9 @@ export default function PasanganCalon(props) {
                   <div className='row'>
                     <div className='col-12 mb-3 d-flex'>
                       <div className='ms-auto'>
-                        <Link to={`/dashboard/detail-vote?tahun=${periode}`}>
+                        <Link to={`/dashboard/detail-vote?tahun=${periode}`} className="text-decoration-none">
                           <div className='btn btn-secondary d-flex align-items-center'>
-                            <span className='material-symbols-outlined d-flex align-items-center fs-5 me-2'>
+                            <span className='d-flex align-items-center fs-5 me-2'>
                               {" "}
                               <HistoryOutlinedIcon />{" "}
                             </span>{" "}
@@ -210,10 +214,8 @@ export default function PasanganCalon(props) {
                       </div>
                       <button
                         onClick={() => setModalAdd(true)}
-                        className='btn btn-primary btn__tambah--calon d-flex align-items-center ms-2'
-                        data-bs-toggle='modal'
-                        data-bs-target='#addCandidateModal'>
-                        <span className='material-symbols-outlined d-flex align-items-center fs-5 me-1'>
+                        className='btn btn-primary d-flex align-items-center ms-2'>
+                        <span className='d-flex align-items-center fs-5 me-1'>
                           {" "}
                           <AddOutlinedIcon />{" "}
                         </span>{" "}
@@ -373,10 +375,10 @@ export default function PasanganCalon(props) {
                 </div>
                 <div className='row'>
                   <div className='col'>
-                    {/* nim */}
+                    {/* NIT */}
                     <div className='form-group'>
-                      <label htmlFor='nim-ketua' className='form-label'>
-                        NIM
+                      <label htmlFor='nit-ketua' className='form-label'>
+                        NIT
                       </label>
                       <div className='input-group'>
                         <input
@@ -388,7 +390,7 @@ export default function PasanganCalon(props) {
                           }
                           type='text'
                           className='form-control'
-                          id='nim-ketua'
+                          id='nit-ketua'
                           autoComplete='off'
                           required
                         />
@@ -485,10 +487,10 @@ export default function PasanganCalon(props) {
                 <hr />
                 <div className='row'>
                   <div className='col'>
-                    {/* nim */}
+                    {/* NIT */}
                     <div className='form-group'>
-                      <label htmlFor='nim-wakil' className='form-label'>
-                        NIM
+                      <label htmlFor='nit-wakil' className='form-label'>
+                        NIT
                       </label>
                       <div className='input-group'>
                         <input
@@ -500,7 +502,7 @@ export default function PasanganCalon(props) {
                           }
                           type='text'
                           className='form-control'
-                          id='nim-wakil'
+                          id='nit-wakil'
                           autoComplete='off'
                           required
                         />
@@ -647,10 +649,10 @@ export default function PasanganCalon(props) {
                 </div>
                 <div className='row'>
                   <div className='col'>
-                    {/* nim */}
+                    {/* NIT */}
                     <div className='form-group'>
-                      <label htmlFor='nim-ketua' className='form-label'>
-                        NIM
+                      <label htmlFor='nit-ketua' className='form-label'>
+                        NIT
                       </label>
                       <div className='input-group'>
                         <input
@@ -662,7 +664,7 @@ export default function PasanganCalon(props) {
                           }
                           type='text'
                           className='form-control'
-                          id='nim-ketua'
+                          id='nit-ketua'
                           autoComplete='off'
                           defaultValue={candidate.head_nim}
                           required
@@ -761,10 +763,10 @@ export default function PasanganCalon(props) {
                 <hr />
                 <div className='row'>
                   <div className='col'>
-                    {/* nim */}
+                    {/* NIT */}
                     <div className='form-group'>
-                      <label htmlFor='nim-wakil' className='form-label'>
-                        NIM
+                      <label htmlFor='nit-wakil' className='form-label'>
+                        NIT
                       </label>
                       <div className='input-group'>
                         <input
@@ -776,7 +778,7 @@ export default function PasanganCalon(props) {
                           }
                           type='text'
                           className='form-control'
-                          id='nim-wakil'
+                          id='nit-wakil'
                           autoComplete='off'
                           defaultValue={candidate.deputy_nim}
                           required

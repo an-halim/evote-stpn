@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import logoStpn from "../assets/images/stpn-logo.png";
+import logoPPU from "../assets/images/logo_ppu.png";
 import { Link } from "react-router-dom";
 import Offcanvas from "react-bootstrap/Offcanvas";
 
@@ -7,6 +7,11 @@ export default function SuccessVote() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "/login";
+  };
 
   return (
     <>
@@ -21,14 +26,16 @@ export default function SuccessVote() {
                     <Link to='/' className='navbar-brand'>
                       <div className='d-flex'>
                         <img
-                          src={logoStpn}
-                          alt='logo__stpn'
+                          src={logoPPU}
+                          alt='logo_ppu'
                           height={50}
                         />
                         <h6 className='mt-2 ms-3 fw-bold'>
-                          EVOTE BEM STPN
+                          EVOTE BST STPN
                           <br />
-                          PERIODE 2022/2023
+                          PERIODE {
+                            new Date().getFullYear() + "/" + (new Date().getFullYear() + 1)
+                          }
                         </h6>
                       </div>
                     </Link>
@@ -61,7 +68,8 @@ export default function SuccessVote() {
                     </li>
                     <li className='nav-item'>
                       <Link
-                        to='/logout'
+                        onClick={logout}
+                        to='/login'
                         className='nav-link text-decoration-none'>
                         Log Out
                       </Link>
@@ -75,6 +83,7 @@ export default function SuccessVote() {
         </header>
         {/* CONTENT */}
         <section>
+          <div className="container content-wrapper">
           <div className='position-absolute top-50 start-50 translate-middle text-center w-100'>
             <h4 className='fw-bold'>TERIMA KASIH!</h4>
             <p>Anda telah berhasil menggunakan hak pilih anda.</p>
@@ -85,7 +94,15 @@ export default function SuccessVote() {
               RETURN TO HOMEPAGE
             </Link>
           </div>
+          </div>
         </section>
+        <footer>
+        <p className='text-center m-0'>
+          © Copyright <span id='year'>
+            {new Date().getFullYear()}
+          </span> BST STPN. All rights reserved.
+        </p>
+      </footer>
       </div>
     </>
   );

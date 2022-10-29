@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from "react";
 import logoStpn from "../assets/images/stpn-logo.png";
+import logoDpt from "../assets/images/logo_dpt.png";
+import logoPPU from "../assets/images/logo_ppu.png";
 import axios from "axios";
 import {Link} from "react-router-dom";
 import './index.css'
@@ -20,8 +22,8 @@ export default function Regist() {
   });
   
   useEffect(() => {
-    document.title = 'Register'
-    const nim = document.querySelector("#nim");
+    document.title = 'Register | EVOTE BST STPN';
+    const nim = document.querySelector("#nit");
     nim.focus();
   }, []);
 
@@ -58,30 +60,49 @@ export default function Regist() {
     <div className='container py-5 d-flex justify-content-center align-items-center'>
       <ToastContainer />
       <div>
-        <div className='form__header text-center d-flex align-items-center'>
-          <img
-            src={logoStpn}
-            alt='logo__stpn'
-            height={95}
-            width='auto'
-          />
-          <h4 className='mt-3 ms-3 fw-bold'>
+      <div className="logo text-center">
+      <img
+          src={logoDpt}
+          alt='logo dpt'
+          height={80}
+          width='auto'
+          className='mx-1'
+        />
+        <img
+          src={logoPPU}
+          alt='logo ppu'
+          height={80}
+          width='auto'
+          className='mx-1'
+        />
+        <img
+          src={logoStpn}
+          alt='logo__stpn'
+          height={70}
+          width='auto'
+          className='mx-1'
+        />
+      </div>
+        <div className='form__header mt-4 text-center d-flex justify-content-center align-items-center'>
+          <h4 className='fw-bold'>
             DAFTAR EVOTE <br />
-            STPN 2022/2023
+            BST STPN {
+              new Date().getFullYear() + "/" + (new Date().getFullYear() + 1)
+            }
           </h4>
         </div>
         {/* FORM */}
         <form onSubmit={handleSubmit} method="post">
-          {/* nim */}
+          {/* nit */}
           <div className='form-group mt-3'>
-            <label htmlFor='nim' className='form-label mt-3'>
-              NIM
+            <label htmlFor='nit' className='form-label mt-3'>
+              NIT
             </label>
             <div className='input-group'>
               <input
                 type='text'
                 className='form-control'
-                id='nim'
+                id='nit'
                 autoComplete='off'
                 onChange={(e) => setData({...data, nim: e.target.value})}
                 required={true}

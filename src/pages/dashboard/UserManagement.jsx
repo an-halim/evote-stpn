@@ -184,6 +184,8 @@ export default function UserManagement() {
   useEffect(() => {
     getDetail();
     fetchData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -277,7 +279,7 @@ export default function UserManagement() {
                       <thead className='table-dark'>
                         <tr>
                           <th scope='col'>No</th>
-                          <th scope='col'>NIM</th>
+                          <th scope='col'>NIT</th>
                           <th scope='col'>Nama Lengkap</th>
                           <th scope='col'>Jurusan</th>
                           <th scope='col'>Email</th>
@@ -306,6 +308,7 @@ export default function UserManagement() {
                               )
                             : activeData
                           )
+                            // eslint-disable-next-line array-callback-return
                             ?.filter((val) => {
                               if (search === "") {
                                 return val;
@@ -435,16 +438,16 @@ export default function UserManagement() {
               <div className='container-fluid'>
                 <div className='row'>
                   <div className='col'>
-                    {/* nim */}
+                    {/* nit */}
                     <div className='form-group'>
-                      <label htmlFor='nim-add' className='form-label'>
-                        NIM
+                      <label htmlFor='nit-add' className='form-label'>
+                        NIT
                       </label>
                       <div className='input-group'>
                         <input
                           type='text'
                           className='form-control'
-                          id='nim-add'
+                          id='nit-add'
                           autoComplete='off'
                           required
                           onChange={(e) => setUser({...user, nim: e.target.value})}
@@ -570,16 +573,16 @@ export default function UserManagement() {
               <div className='container-fluid'>
                 <div className='row'>
                   <div className='col'>
-                    {/* nim */}
+                    {/* nit */}
                     <div className='form-group'>
-                      <label htmlFor='nim' className='form-label'>
-                        NIM
+                      <label htmlFor='nit' className='form-label'>
+                        NIT
                       </label>
                       <div className='input-group'>
                         <input
                           type='text'
                           className='form-control'
-                          id='nim'
+                          id='nit'
                           autoComplete='off'
                           defaultValue={user.nim}
                           disabled

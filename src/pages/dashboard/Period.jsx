@@ -91,18 +91,19 @@ export default function Period() {
         }
       )
       .then((res) => {
-        toast.success("Success add period");
+        toast.success("Berhasil menambahkan periode");
         fetchData();
       })
       .catch((err) => {
-        toast.error("Failed add period");
+        toast.error(err.response.data.errors[0].includes('taken') ? "Periode sudah ada!" : "Gagal menambahkan periode");
+        console.clear();
       });
   };
 
   const deletePeriod = (period) => {
-    setModalHapus(false)
-    const Toast = toast.loading("Please wait...")
-    
+    setModalHapus(false);
+    const Toast = toast.loading("Please wait...");
+
     axios
       .delete(`${base}/period?year=${period}`, {
         headers: {
@@ -110,13 +111,23 @@ export default function Period() {
         },
       })
       .then((res) => {
-        toast.update(Toast, { render: "Success delete period", type: "success", isLoading: false, autoClose: 1500 });
+        toast.update(Toast, {
+          render: "Berhasil menghapus periode",
+          type: "success",
+          isLoading: false,
+          autoClose: 1500,
+        });
         fetchData();
       })
       .catch((err) => {
-        toast.update(Toast, { render: "Failed delete period", type: "error", isLoading: false, autoClose: 1500 });
+        toast.update(Toast, {
+          render: "Gagal menghapus periode",
+          type: "error",
+          isLoading: false,
+          autoClose: 1500,
+        });
+        console.clear();
       });
-      
   };
 
   const handleStatus = (periode, status) => {
@@ -139,6 +150,7 @@ export default function Period() {
       })
       .catch((err) => {
         toast.error(err.response.data.errors);
+        console.clear();
       });
   };
 
@@ -146,6 +158,8 @@ export default function Period() {
     getDetail();
     fetchData();
     genPeriode();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <>
@@ -226,7 +240,15 @@ export default function Period() {
                               <tr key={index}>
                                 <th scope='row'>{index + 1}</th>
                                 <td>{item.period}</td>
-                                <td>{item.status}</td>
+                                <td>
+                                  {
+                                    item.status === "active"
+                                    ? "Aktif"
+                                    : item.status === "inactive"
+                                    ? "Nonaktif"
+                                    : "Selesai"
+                                  }
+                                </td>
                                 <td className='d-flex'>
                                   <button
                                     type='button'
@@ -320,8 +342,8 @@ export default function Period() {
                 <div className='input-group'>
                   <select
                     onChange={(e) => {
-                      setPeriod(e.target.value)
-                      console.log(period)
+                      setPeriod(e.target.value);
+                      console.log(period);
                     }}
                     defaultChecked={generatePeriod[0]}
                     className='form-select'
@@ -381,9 +403,10 @@ export default function Period() {
                 onClick={() => setModalHapus(false)}>
                 Batal
               </button>
-              <button 
-              onClick={() => deletePeriod(choosedPeriod)}
-              type='button' className='btn btn-danger'>
+              <button
+                onClick={() => deletePeriod(choosedPeriod)}
+                type='button'
+                className='btn btn-danger'>
                 Hapus
               </button>
             </>

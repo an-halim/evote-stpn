@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import { Link } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from "axios";
@@ -6,7 +6,6 @@ import {toast, ToastContainer} from "react-toastify";
 
 export default function SetNewPass() {
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [confirmErr, setConfirmErr] = useState(false);
 
   const base = process.env.REACT_APP_BASE_URL;
@@ -56,7 +55,6 @@ export default function SetNewPass() {
           });
         }
       }).finally(() => {
-        setLoading(false);
         localStorage.clear();
         setTimeout(() => {
           window.location.href = "/login";

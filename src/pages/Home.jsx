@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import logoStpn from "../assets/images/stpn-logo.png";
+import logoPPU from "../assets/images/logo_ppu.png";
+import searchingPeople from "../assets/images/people.svg"
 import "./index.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Offcanvas from "react-bootstrap/Offcanvas";
-import {toast, ToastContainer} from 'react-toastify';
+import { toast, ToastContainer } from "react-toastify";
 import { MyVerticallyCenteredModal } from "../component/Modal";
 
 export default function Home() {
@@ -74,7 +75,11 @@ export default function Home() {
         }, 1000);
       })
       .catch((err) => {
-        toast.error(err.response.data.errors === 'You have already voted' ? 'Anda sudah memilih' : 'Gagal memilih');
+        toast.error(
+          err.response.data.errors === "You have already voted"
+            ? "Anda sudah memilih"
+            : "Gagal memilih"
+        );
       });
   };
   const logout = () => {
@@ -82,38 +87,34 @@ export default function Home() {
   };
 
   useEffect(() => {
-    document.title = "Home";
+    document.title = "Home | EVOTE BEM STPN";
     getDetail();
     getData();
-    const yearEl = document.querySelector("#year");
-    yearEl.textContent = new Date().getFullYear();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>
       <ToastContainer />
       <MyVerticallyCenteredModal
-
         show={modal}
         onHide={setModal}
-        header={
-          <h4 className='fw-bold mb-4'>PERHATIAN!</h4>
-        }
+        header={<h4 className='fw-bold mb-4'>PERHATIAN!</h4>}
         body={
-        <p>
-          Pemilihan ini hanya dapat dilakukan <b>sekali</b> dan tidak dapat
-          diulang. Mohon berhati-hati menggunakan hak pilih anda, jangan sampai
-          salah memilih dan
-          <b>gunakan hak pilih anda dengan baik.</b>
-        </p>
+          <p>
+            Pemilihan ini hanya dapat dilakukan <b>sekali</b> dan tidak dapat
+            diulang. Mohon berhati-hati menggunakan hak pilih anda, jangan
+            sampai salah memilih dan
+            <b>gunakan hak pilih anda dengan baik.</b>
+          </p>
         }
         footer={
           <button
             onClick={() => setModal(false)}
-           className='btn btn-secondary btn__mengerti w-100 rounded-5 d-block fw-bold'>
-          OKE, MENGERTI
-        </button>
+            className='btn btn-secondary btn__mengerti w-100 rounded-5 d-block fw-bold'>
+            OKE, MENGERTI
+          </button>
         }
-
       />
       {/* <div className='overlay' /> */}
       {/* NAVBAR */}
@@ -125,11 +126,14 @@ export default function Home() {
                 <div className='d-flex justify-content-between'>
                   <Link to='/' className='navbar-brand'>
                     <div className='d-flex'>
-                      <img src={logoStpn} alt='logo__stpn' height={50} />
+                      <img src={logoPPU} alt='logo__stpn' height={50} />
                       <h6 className='mt-2 ms-3 fw-bold'>
-                        EVOTE BEM STPN
+                        EVOTE BST STPN
                         <br />
-                        PERIODE 2022/2023
+                        PERIODE{" "}
+                        {new Date().getFullYear() +
+                          "/" +
+                          (new Date().getFullYear() + 1)}
                       </h6>
                     </div>
                   </Link>
@@ -152,10 +156,10 @@ export default function Home() {
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                   <ul className='navbar-nav justify-content-end flex-grow-1 pe-3'>
-                    <li className='nav-item'>
+                    <li className='nav-item '>
                       <Link
                         to='/'
-                        className='nav-link active text-decoration-none'
+                        className='nav-link active text-decoration-none text-semibold'
                         aria-current='page'>
                         Home
                       </Link>
@@ -167,7 +171,7 @@ export default function Home() {
                         className='nav-link text-decoration-none'>
                         Log Out
                       </Link>
-                    </li> 
+                    </li>
                   </ul>
                 </Offcanvas.Body>
               </Offcanvas>
@@ -177,14 +181,25 @@ export default function Home() {
       </header>
       {/* CONTENT */}
       <section>
-        <div className='container'>
+        <div className='container content-wrapper'>
           <div className='row justify-content-center mx-3'>
             <div className='text-center'>
-              <h4 className='d-inline-block position-relative fw-bold'>VOTE</h4>
-              <p>
-                Sampaikan suara anda dengan memilih salah satu pasangan calon di
-                bawah.
-              </p>
+              {!loading && data.length <= 0 ? (
+                <div className="text-center d-flex flex-column">
+                  <img src={searchingPeople} alt="searching-illust" height="300" />
+                  <h4 className="d-inline-block position-relative fw-bold">Tidak ada polling aktif saat ini</h4>
+                </div>
+              ) : (
+                <>
+                  <h4 className='d-inline-block position-relative fw-bold'>
+                    VOTE
+                  </h4>
+                  <p>
+                    Sampaikan suara anda dengan memilih salah satu pasangan
+                    calon di bawah.
+                  </p>
+                </>
+              )}
             </div>
 
             {loading ? (
@@ -195,7 +210,9 @@ export default function Home() {
               </div>
             ) : (
               data.map((item, index) => (
-                <div className='paslon__card offset-lg-1 col-lg-3 my-4 p-0' key={index}>
+                <div
+                  className='paslon__card mx-4 col-lg-3 my-4 p-0'
+                  key={index}>
                   {/* gambar */}
                   <div className='paslon__img'>
                     <img
@@ -233,17 +250,17 @@ export default function Home() {
                     className='btn btn-primary btn__vote rounded-5 d-block fw-bold'>
                     VOTE
                   </button>
-                  <hr className='paslon__rule' />
                 </div>
               ))
             )}
           </div>
         </div>
       </section>
-      {/* FOOTER */}
       <footer>
         <p className='text-center m-0'>
-          © Copyright <span id='year'>2099</span> BEM STPN. All rights reserved.
+          © Copyright <span id='year'>
+            {new Date().getFullYear()}
+          </span> BST STPN. All rights reserved.
         </p>
       </footer>
     </div>

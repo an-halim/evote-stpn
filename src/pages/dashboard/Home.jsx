@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "./home.css";
 import axios from "axios";
+import searchingPeople from "../../assets/images/people.svg";
 import Sidebar from "../../component/Sidebar";
 import { capitalize } from "@mui/material";
 
@@ -28,6 +29,7 @@ export default function Home() {
       .catch((err) => {
         console.log(err);
         window.location.href = "/login";
+        console.clear();
       });
   };
 
@@ -46,13 +48,15 @@ export default function Home() {
       })
       .finally(() => {
         setLoading(false);
+        console.clear();
       });
   };
 
   useEffect(() => {
-    document.title = "Dashboard";
     getDetail();
     getData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -85,13 +89,18 @@ export default function Home() {
               </nav>
               <div className='content-title'>
                 <h2 className='fw-bold'>Dashboard</h2>
-                <p className='fs-5'>
+                <div className='fs-5'>
                   {
                     data.length < 1
-                    ? "Tidak ada periode yang aktif"
-                    : "Summary pemilihan ketua dan wakil BEM periode " + data[0]?.period
+                    ? (
+                      <div className="text-center d-flex flex-column">
+                        <img src={searchingPeople} alt="searching-illust" height="300" />
+                        <h4 className="d-inline-block position-relative fw-bold">Tidak ada polling aktif saat ini</h4>
+                      </div>
+                    )
+                    : "Summary pemilihan ketua dan wakil BST STPN periode " + data[0]?.period
                   }
-                </p>
+                </div>
               </div>
               <div className='paslon-container container-fluid'>
                 <div className='row'>

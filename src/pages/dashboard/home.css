@@ -44,6 +44,7 @@ hr.h-color {
 }
 .paslon__img img {
   object-fit: cover;
+  height: 200px;
 }
 
 .img__overlay {

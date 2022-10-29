@@ -80,7 +80,7 @@ export default function Forgot() {
         </div>
         {/* FORM */}
         <form onSubmit={handleSubmit}>
-          {/* nim */}
+          {/* email */}
           <div className='form-group mt-4'>
             <label htmlFor='email' className='form-label'>
               Email

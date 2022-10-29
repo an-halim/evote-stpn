@@ -1,19 +1,19 @@
 {
   "short_name": "EvotingAPP",
-  "name": "E-Voting BEM STPN",
+  "name": "EVOTE BST STPN",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "logo_ppu.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "stpn-logo.png",
+      "src": "logo_ppu.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "stpn-logo.png",
+      "src": "logo_ppu.png",
       "type": "image/png",
       "sizes": "512x512"
     }

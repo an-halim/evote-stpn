@@ -149,6 +149,8 @@ export default function ConfirmUser() {
   React.useEffect(() => {
     getDetail();
     fetchData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -253,7 +255,7 @@ export default function ConfirmUser() {
                       <thead className='table-dark'>
                         <tr>
                           <th scope='col'>No</th>
-                          <th scope='col'>NIM</th>
+                          <th scope='col'>NIT</th>
                           <th scope='col'>Nama Lengkap</th>
                           <th scope='col'>Jurusan</th>
                           <th scope='col'>Email</th>
@@ -281,6 +283,7 @@ export default function ConfirmUser() {
                               )
                             : userToActivate
                           )
+                            // eslint-disable-next-line array-callback-return
                             ?.filter((val) => {
                               if (search === "") {
                                 return val;
